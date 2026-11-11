@@ -16,9 +16,9 @@ Measured by `tests/qr_density_study.py` (table: [qr_density.md](qr_density.md)):
 
 ## Limits of this evidence
 
-- **Simulation only.** No glare, no moire from the screen's own pixel grid, no autofocus miss, no real phone scanner. Real photos will do worse; treat `photo` as the only level promised to work with a phone, and confirm with a real photo before relying on any other.
+- **This study is a simulation.** No glare, no moire from the screen's own pixel grid, no autofocus miss, no real phone scanner. The owner has photographed Tau Alpha's QR pages with a phone, but those photos were not part of this study, so treat `photo` as the only level with practical use behind it and confirm the others with a real photo before relying on them.
 - A small sample (3 seeds per cell). The edges of the table are soft: "flaky" means 1-2 of 3 passed.
 - OpenCV's classic detector is a conservative proxy, not a phone. Phone scanners (ZXing, Apple, Google) often read denser codes.
-- If you have real phone photos of dense Pocket QR codes, they are better fixtures than this study; add them and rerun.
+- The real phone photos of Tau Alpha's QR pages are better evidence than this study. Adding them as test pictures (with the version and byte count of each code) would replace these simulated limits with measured ones.
 
 To re-measure on your own screen size or decoder: `python3 tests/qr_density_study.py --seeds 5`.

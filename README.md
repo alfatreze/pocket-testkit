@@ -112,9 +112,9 @@ A 16-byte header (`TPG2`, mode, flags, reserved, payload length, CRC32; big endi
 | QR on a real Pocket | decoded from real screenshots, up to a 2,281-byte dense code; the encoder also matches `segno` for all 38 versions |
 | Rust crate | tests pass in CI on Linux, macOS and Windows; the core and QR build for WebAssembly |
 | Other screen sizes | host tests only (13 sizes, Python and C equal pixel for pixel) |
-| Phone photos | **simulated only**: no real phone trial recorded yet |
+| Phone photos | used in practice: the owner photographed Tau Alpha's QR pages with a phone. Those photos and their results are **not recorded in this repo**, so the density limits and the example photos here are simulated |
 
-Not done: a real phone-photo trial, error correction for tier R, multi-QR for full reports through a camera, a web decoder, a sample test core for the Pocket.
+Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a sample test core for the Pocket.
 
 ## Licence
 
