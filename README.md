@@ -20,20 +20,20 @@ A damaged picture fails loudly on the CRC32; it is never decoded to a wrong payl
 
 ## Capacity by screen size
 
-The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted.
+The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted. Rows are the sizes a Pocket core realistically runs at; 400x360 is what Tau uses.
 
 | Screen | Size | L, lossless | R, robust (4 px cells) |
 |---|---|---|---|
 | Game Boy | 160x144 | 41,456 | 956 |
 | Game Boy Advance | 240x160 | 51,184 | 1,184 |
+| NES / SNES | 256x224 | 100,336 | 2,336 |
 | QVGA | 320x240 | 115,184 | 2,684 |
-| Small LCD | 480x272 | 147,952 | 3,452 |
-| **Analogue Pocket** | 400x360 | 259,184 | 6,059 |
+| **Tau default** | 400x360 | 259,184 | 6,059 |
 | VGA | 640x480 | 460,784 | 10,784 |
 | WVGA | 800x480 | 460,784 | 10,784 |
-| 720p | 1280x720 | 1,036,784 | 24,284 |
-| 1080p | 1920x1080 | 2,332,784 | 54,659 |
-| 4K | 3840x2160 | 9,331,184 | 218,684 |
+| **Pocket maximum** | 800x720 | 1,036,784 | 24,284 |
+
+The table stops at 800x720, the largest video size the Pocket's core interface accepts (16x16 to 800x720 in Analogue's developer docs; not re-tested on hardware here). The codec has no such limit: it was tested up to 4K for other devices, see [docs/RESOLUTIONS.md](docs/RESOLUTIONS.md).
 
 QR does not depend on the screen. Its capacity is set by the QR version, and the screen only decides how large the modules are drawn:
 
