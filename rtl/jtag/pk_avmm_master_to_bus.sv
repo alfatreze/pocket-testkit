@@ -1,6 +1,8 @@
 // For the JTAG-to-Avalon master path: adapts the master's exported Avalon-MM master
 // signals (from Platform Designer) to the same request/ack register bus used by the
-// Virtual JTAG window, so both links share one set of registers.
+// Virtual JTAG window. The register bus has ONE master port: if both links are built in,
+// add an arbiter in front of it; simultaneous use corrupts accesses. clk must be the clock
+// of the Avalon master bridge. Byte enables are ignored (every write is a full word).
 // The master bridge expects waitrequest and readdatavalid; this gives both.
 module pk_avmm_master_to_bus #(parameter ADDR_SHIFT = 2) (
     input  wire        clk,

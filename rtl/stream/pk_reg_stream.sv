@@ -21,6 +21,7 @@ module pk_reg_stream #(parameter DEPTH_LOG2 = 6) (
     input  wire       rx_ready
 );
     localparam N = 1 << DEPTH_LOG2;
+    initial if (DEPTH_LOG2 > 7) $error("pk_reg_stream: STATUS fields are 8 bits, DEPTH_LOG2 must be <= 7");
     reg [7:0] txm [0:N-1];
     reg [7:0] rxm [0:N-1];
     reg [DEPTH_LOG2:0] tx_w = 0, tx_r = 0, rx_w = 0, rx_r = 0;

@@ -17,7 +17,7 @@ Host: `host/pk_vjtag.tcl` (`quartus_stp -t`), `python/pk_link.py`, `host/syscons
 
 ## Add it to a core
 
-1. Copy `rtl/` into the project; add the files to the `.qsf`. Instantiate `pk_vjtag_debug` behind a macro (for example `TAU_DEBUG_LINK`), `clk` at least 2x the JTAG clock (a 74 MHz clock is fine).
+1. Copy `rtl/` into the project; add the files to the `.qsf`. Instantiate `pk_vjtag_debug` behind a macro (for example `PK_DEBUG_LINK`); `clk` should be well above the JTAG clock (2x as Intel advises for the master bridge; a 74 MHz clock is fine). The window's crossings do not depend on the ratio, only the bus timeout does.
 2. Connect your registers to the `u_*` port (word addresses 0x4000 and up) or leave it unconnected (`u_ack` tied 0 gives a timeout, not a hang).
 3. Constrain the JTAG clock and `clk` as asynchronous clock groups in the SDC.
 4. Fit. Read the per-entity utilisation for the cost and write it down. Check KB-010: no synchroniser chain should become block RAM.

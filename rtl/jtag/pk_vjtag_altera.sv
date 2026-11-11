@@ -2,8 +2,10 @@
 // NOT fitted or tested on hardware by this kit (see docs/DEBUG_LINK_CHOICE.md).
 // Port and parameter names follow Intel's Virtual JTAG IP user guide; check them against
 // your Quartus version's generated instance if the compile complains.
-// Constrain tck (altera_reserved_tck is not needed here: the primitive's tck) as an
-// asynchronous clock group against clk, or the tck <-> clk paths will be timed.
+// SDC: declare the JTAG clock (altera_reserved_tck, a hidden port) and clk as asynchronous
+// clock groups, for example set_clock_groups -asynchronous -group {altera_reserved_tck}
+// -group {<your clk>}, or the tck <-> clk paths are timed as if related. The crossings are
+// safe by protocol (toggle plus payload stable while busy), not by the analyser.
 module pk_vjtag_altera #(
     parameter [31:0] ID = 32'h504B_0101,
     parameter        TIMEOUT = 1024,
