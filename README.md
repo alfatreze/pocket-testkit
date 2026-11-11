@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo/banner.png" alt="pocket-testkit logo: a pixel handheld showing a colour grid, in the four CGA colours" width="640"></p>
+
 # pocket-testkit
 
 Carry test and diagnostic results **out of a device as a picture**, and decode them on a PC.
