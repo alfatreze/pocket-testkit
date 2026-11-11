@@ -40,6 +40,6 @@ Exit 0 decoded, 1 unreadable, 2 usage.
 
 - `cargo test --features cli`: 14 pictures made by the Python reference (grids at 160x144, 400x360, 720x1280, 800x480, 1280x720, 1920x1080, cells of 2, 4 and 8 px, a JPEG q80 copy, a half-size copy with `native`, QR on three screen sizes, a dense QR) decode to the same bytes and tier; a blank picture is not found; damage is reported, not guessed.
 - The Rust and Python decoders gave the same result on all 31 screenshots of real Pocket reports in Tau Omega's test data (grid L in both layouts, grid R, QR up to a 2,281-byte dense code). Those captures are not copied here.
-- `.github/workflows/rust.yml` runs the tests on Ubuntu, macOS and Windows and builds for `wasm32-unknown-unknown`; check the badge/status before relying on a platform.
+- `.github/workflows/rust.yml` runs the tests on Ubuntu, macOS and Windows and builds for `wasm32-unknown-unknown`; all three platforms and the WebAssembly build passed on the first run (2026-11-11).
 
 Limits: decoder only (encoders are in `python/` and `c/`); the QR reader is `rqrr`, so very dense codes in a blurry photo are less forgiving than the Python decoder's Aruco path; no error correction in the grid.
