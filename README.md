@@ -20,22 +20,22 @@ A damaged picture fails loudly on the CRC32; it is never decoded to a wrong payl
 
 ## Capacity by screen size
 
-The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted. Rows are the sizes a Pocket core realistically runs at; 400x360 is what Tau uses.
+The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted. Rows are resolutions a Pocket core realistically runs at (for reference: 160x144 Game Boy, 240x160 Game Boy Advance, 256x224 NES/SNES, 400x360 what Tau uses, 800x720 the Pocket's maximum).
 
-| Screen | Size | L, lossless | R, robust (4 px cells) |
-|---|---|---|---|
-| Game Boy | 160x144 | 41,456 | 956 |
-| Game Boy Advance | 240x160 | 51,184 | 1,184 |
-| NES / SNES | 256x224 | 100,336 | 2,336 |
-| QVGA | 320x240 | 115,184 | 2,684 |
-| **Tau default** | 400x360 | 259,184 | 6,059 |
-| VGA | 640x480 | 460,784 | 10,784 |
-| WVGA | 800x480 | 460,784 | 10,784 |
-| **Pocket maximum** | 800x720 | 1,036,784 | 24,284 |
+| Resolution | Grid L, lossless | Grid R, robust (4 px cells) | QR safe max (photo) | QR largest that fits |
+|---|---|---|---|---|
+| 160x144 | 41,456 | 956 | 271 (2 px) | 321 (v11) |
+| 240x160 | 51,184 | 1,184 | 271 (2 px) | 425 (v13) |
+| 256x224 | 100,336 | 2,336 | 271 (3 px) | 929 (v21) |
+| 320x240 | 115,184 | 2,684 | 271 (3 px) | 1,091 (v23) |
+| 400x360 | 259,184 | 6,059 | 271 (5 px) | 2,699 (v38) |
+| 640x480 | 460,784 | 10,784 | 271 (7 px) | 2,699 (v38) |
+| 800x480 | 460,784 | 10,784 | 271 (7 px) | 2,699 (v38) |
+| 800x720 | 1,036,784 | 24,284 | 271 (11 px) | 2,699 (v38) |
 
 The table stops at 800x720, the largest video size the Pocket's core interface accepts (16x16 to 800x720 in Analogue's developer docs; not re-tested on hardware here). The codec has no such limit: it was tested up to 4K for other devices, see [docs/RESOLUTIONS.md](docs/RESOLUTIONS.md).
 
-QR does not depend on the screen. Its capacity is set by the QR version, and the screen only decides how large the modules are drawn:
+**QR columns.** The *safe max* is the `photo` level (version 10, 271 bytes), the most a phone scanner is expected to read; in brackets the module size it is drawn with on that screen (the biggest whole-pixel size that fits). *Largest that fits* is the densest code the screen can draw with at least 2 px modules (version in brackets); anything above 271 bytes is for screenshots only. QR capacity is set by the QR version, not the screen, so a bigger screen only draws the same code bigger. Module size matters for photos: below 3 px, test with a real photo (the density study did not cover small screens).
 
 | QR density level | Version | Bytes | Meant for |
 |---|---|---|---|
@@ -113,3 +113,4 @@ Not done: a real phone-photo trial, error correction for tier R, multi-QR for fu
 ## Licence
 
 Apache License 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). The grid codec and QR encoder were written for Tau by the same author and are relicensed here. No copyleft code is included.
+
