@@ -6,7 +6,7 @@ import numpy as np, cv2
 from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "python"))
-import tpg
+import tpg, qr_tier, qr_decode, base64
 OUT = os.path.join(ROOT, "docs", "img"); os.makedirs(OUT, exist_ok=True)
 W, H = tpg.W, tpg.H
 
@@ -17,15 +17,7 @@ SUMMARY = "PKT1 PASS run=17 b=0.7.1 crc=%08X" % zlib.crc32(REPORT)
 def screen_png(arr565=None, rgb=None):
     return Image.fromarray(tpg.to_rgb(arr565)) if rgb is None else Image.fromarray(rgb)
 
-def qr_screen(text, px=8):
-    m = cv2.QRCodeEncoder.create().encode(text)               # 1 = module (black after inversion below)
-    m = (np.asarray(m) > 0)
-    mod = np.where(m, 255, 0).astype(np.uint8) if m.dtype != np.uint8 else m
-    mod = np.pad(mod, 4, constant_values=255)                 # quiet zone
-    img = np.kron(mod, np.ones((px, px), np.uint8))
-    s = Image.new("RGB", (W, H), (0, 0, 0))
-    q = Image.fromarray(img).convert("RGB"); s.paste(q, ((W - q.width) // 2, (H - q.height) // 2))
-    return s
+def qr_screen(text): return qr_tier.screen(text)          # the Pocket firmware's own encoder (c/qr/qrcode.h)
 
 def caption(img, top, bottom):
     d = ImageDraw.Draw(img); d.text((8, 6), top, fill=(255, 160, 40)); d.text((8, H - 16), bottom, fill=(140, 146, 160)); return img
@@ -51,22 +43,27 @@ def fake_photo(img, seed=1):
     im = Image.fromarray((out * 255).astype(np.uint8)); b = io.BytesIO(); im.save(b, "JPEG", quality=70); b.seek(0)
     return Image.open(b).convert("RGB")
 
-def qr_decode(img):
-    t, _, _ = cv2.QRCodeDetector().detectAndDecode(cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)); return t
+def qr_decode_safe(img):
+    try: return qr_decode.decode(img)
+    except ValueError: return ""
 
 def main():
     log = []
     L = screen_png(tpg.encode(REPORT, tpg.MODE_L)); R = screen_png(tpg.encode(REPORT, tpg.MODE_R)); Q = qr_screen(SUMMARY)
     big = bytes(np.random.default_rng(7).integers(0, 256, 40000, dtype=np.uint8))
+    DENSE = "TAUD1:" + base64.urlsafe_b64encode(zlib.compress(REPORT, 9)).decode().rstrip("=")
+    QD = qr_screen(DENSE)
     LB = screen_png(tpg.encode(big, tpg.MODE_L))
     for name, im, top, bot in [("tier_l_lossless", L, "LOSSLESS GRID  %d B" % len(REPORT), "PNG ONLY"),
                                ("tier_r_robust", R, "ROBUST GRID  %d B" % len(REPORT), "SURVIVES JPEG / RESIZE"),
                                ("tier_q_qr", Q, "QR  summary only", "SURVIVES A PHONE CAMERA"),
+                               ("tier_q_dense", QD, "QR  full record (compressed) %d chars" % len(DENSE), "DENSE: NEEDS A STEADY CLEAN PHOTO"),
                                ("tier_l_large", LB, "LOSSLESS GRID  40000 B", "BIG REPORT: BLOCK GROWS")]:
         with_zoom(caption(im, top, bot)).save(os.path.join(OUT, name + ".png"))
     # checks
     for im in (L, R): assert tpg.decode(np.asarray(im.convert("RGB"))) == REPORT   # the captioned screenshot itself decodes
-    assert qr_decode(Q) == SUMMARY
+    assert qr_decode_safe(Q) == SUMMARY
+    log.append("dense QR (%d chars, version %d): %s" % (len(DENSE), qr_tier.encode_matrix(DENSE.encode())[0], "decoded by OpenCV" if qr_decode_safe(QD) == DENSE else "NOT decoded by OpenCV"))
     assert tpg.decode(tpg.to_rgb(tpg.encode(REPORT, tpg.MODE_L))) == REPORT
     assert tpg.decode(tpg.to_rgb(tpg.encode(REPORT, tpg.MODE_R))) == REPORT
     assert tpg.decode(tpg.to_rgb(tpg.encode(big, tpg.MODE_L))) == big
@@ -76,7 +73,7 @@ def main():
     # simulated photos
     for name, im in [("sim_photo_qr", Q), ("sim_photo_robust_grid", R)]:
         ph = fake_photo(im); ph.save(os.path.join(OUT, name + ".jpg"), quality=70)
-        if "qr" in name: log.append("simulated photo of QR: " + ("decoded -> " + qr_decode(ph) if qr_decode(ph) == SUMMARY else "NOT decoded"))
+        if "qr" in name: log.append("simulated photo of QR: " + ("decoded -> " + qr_decode_safe(ph) if qr_decode_safe(ph) == SUMMARY else "NOT decoded"))
         else:
             try: ok = tpg.decode(np.asarray(ph.resize((W, H), Image.LANCZOS))) == REPORT
             except ValueError: ok = False

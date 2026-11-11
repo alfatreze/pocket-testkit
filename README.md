@@ -9,11 +9,11 @@ One payload, one CRC32, **three carriers**. Pick by how the picture leaves the d
 |---|---|---|---|---|
 | **L** | Lossless colour grid | ~259 KB | lossless PNG only | You copy the screenshot file off the device |
 | **R** | Robust colour grid | ~6 KB | JPEG q80+, chat resize | The screenshot goes through chat or email |
-| **Q** | QR code | summary only (~0.1-0.5 KB) | a phone camera | An **external photo** of the screen |
+| **Q** | QR code (Tau's own encoder, level L, versions 1-38) | ~2.7 KB text; small versions for photos | a phone camera (small versions); screenshots (dense) | An **external photo** of the screen, or any scanner app |
 
 A bad decode fails loudly (CRC32), never silently.
 
-> Status: **early extraction.** The grid codec (`python/tpg.py`, `c/tpg.h`) is Tau's, hardware-confirmed on a Pocket for the pre-merge format. The QR tier here is a demo carrying a summary string; the firmware QR encoder from Tau is not yet ported. The "photo" pictures below are a **simulation**, not a real camera.
+> Status: **early extraction.** Both carriers are Tau's own code, which ran on a Pocket: the grid codec (`python/tpg.py`, `c/tpg.h`, decoded from Pocket screenshots through DEV 219) and the QR encoder (`c/qr/`, the one the Tau report pages used before the grid; restored from git history). Here the QR encoder is checked against the `segno` reference for all 38 versions, not on a Pocket. The "photo" pictures below are a **simulation**, not a real camera.
 
 ## The examples
 
@@ -34,9 +34,13 @@ A large report (40,000 bytes) just grows the block:
 ![Robust grid](docs/img/tier_r_robust.png)
 
 ### Tier Q: QR code
-For a camera. Carries a short summary (verdict, run counter, build, CRC of the full record), not the full report.
+For a camera or any scanner app. A small code carries a short summary (verdict, run counter, build, CRC of the full record). The encoder is the Pocket firmware's own (`c/qr/qrcode.h`).
 
 ![QR code](docs/img/tier_q_qr.png)
+
+A dense code carries the whole record (here zlib + base64url, 1,046 characters, version 23, 2 px modules). It decodes from a screenshot with the Aruco detector in `python/qr_decode.py`; Tau found dense codes are harder for a phone, so keep photo codes small.
+
+![Dense QR code](docs/img/tier_q_dense.png)
 
 ### Simulated phone photos (tilt, blur, noise, JPEG q70)
 
@@ -52,10 +56,12 @@ QR decodes; the colour grid does not, which is why tier Q exists. Results in [`d
 pip install numpy pillow opencv-python
 python3 python/tpg.py encode report.bin shot.png --mode R     # make a picture
 python3 python/tpg.py decode shot.png report.bin              # read it back (exit 1 = invalid)
+python3 python/qr_decode.py                                   # (library) decode a QR from a screenshot or photo: qr_decode.decode(path)
+python3 tests/test_qr.py                                      # QR encoder vs segno, all versions (needs: pip install segno)
 python3 examples/make_examples.py                             # regenerate the pictures above
 ```
 
-On a device, `c/tpg.h` is the pure C core (where the block sits and which value pixel (x, y) has); the C and Python codecs match pixel for pixel in Tau's tests.
+`c/qr/qrcode.h` is portable C (no libc, no malloc, caller-supplied working buffer, level L, byte mode, versions 1-38); `python/qr_tier.py` builds it natively and draws it. On a device, `c/tpg.h` is the pure C core (where the block sits and which value pixel (x, y) has); the C and Python codecs match pixel for pixel in Tau's tests.
 
 ## Format (TPG2)
 
@@ -63,8 +69,8 @@ On a device, `c/tpg.h` is the pure C core (where the block sits and which value 
 
 ## Not yet done
 
-Spec file with golden vectors; QR encoder in C; Reed-Solomon for tier R; multi-QR for full reports through a camera; a real phone-photo trial; Rust and web decoders; tests in this repo (they live in Tau: `sim/test_tpg.py`, `sim/test_tpg_fw.py`).
+Spec file with golden vectors; Reed-Solomon for tier R; multi-QR for full reports through a camera; Rust and web decoders; the grid tests in this repo (they live in Tau: `sim/test_tpg.py`, `sim/test_tpg_fw.py`); a recorded phone-photo trial with real photos (the simulation here is not one).
 
 ## Licence and provenance
 
-MIT. The codec was written for the Tau project (itself MIT). No copyleft code is included; the colour-code alternative JAB was assessed and left out.
+MIT. The grid codec and the QR encoder were written for the Tau project (itself MIT); the QR encoder follows ISO/IEC 18004 with structure after Nayuki's reference layout, per its own header. No copyleft code is included; the colour-code alternative JAB was assessed and left out.
