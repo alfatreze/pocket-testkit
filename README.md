@@ -94,7 +94,7 @@ Left: the 400x360 screen as drawn on the device. Right: the code enlarged. Regen
 | `python/` | `decode.py` (any tier), `pocket_meta.py` (core info in Pocket screenshots), `tpg.py` (grid encode/decode), `qr_tier.py` (QR draw + density guard), `qr_decode.py` (QR read) |
 | `c/` | `tpg.h` (grid core), `qr/` (QR encoder, no libc, no malloc, versions 1-38) |
 | `rust/` | OS-independent decoder crate: no dependencies in the core, `png` / `jpeg` / `qr` features, `pocket-decode` binary ([rust/README.md](rust/README.md)) |
-| `docs/` | [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md) (the core info the Pocket adds to screenshots), [INTEGRATION](docs/INTEGRATION.md), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), logo |
+| `docs/` | [TESTING_STACK](docs/TESTING_STACK.md) (what to check before the device, and where these codes fit), [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md) (the core info the Pocket adds to screenshots), [INTEGRATION](docs/INTEGRATION.md), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), logo |
 | `agent/` | [`AGENTS.snippet.md`](agent/AGENTS.snippet.md): rules to paste into an AI agent's instructions |
 | `tests/` | tests and the density study |
 
