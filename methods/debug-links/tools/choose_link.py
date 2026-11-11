@@ -2,7 +2,7 @@
 """Pick a debug link for an Analogue Pocket core from a few project facts.
 
 An AI agent (or a person) fills in the facts from the project, runs this, and gets a ranked
-list with reasons and caveats. The rules mirror docs/DEBUG_LINK_CHOICE.md; change both
+list with reasons and caveats. The rules mirror methods/debug-links/CHOOSING.md; change both
 together. Costs are NOT measured here: every cost statement is a reason to measure, not a fact.
 
   python3 tools/choose_link.py --where desk --need registers --has-regbus --headroom ok

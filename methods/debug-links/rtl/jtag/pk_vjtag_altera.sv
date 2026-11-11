@@ -1,5 +1,5 @@
 // Quartus wrapper: the sld_virtual_jtag primitive plus pk_vjtag_regwin.
-// NOT fitted or tested on hardware by this kit (see docs/DEBUG_LINK_CHOICE.md).
+// NOT fitted or tested on hardware by this kit (see methods/debug-links/CHOOSING.md).
 // Port and parameter names follow Intel's Virtual JTAG IP user guide; check them against
 // your Quartus version's generated instance if the compile complains.
 // SDC: declare the JTAG clock (altera_reserved_tck, a hidden port) and clk as asynchronous

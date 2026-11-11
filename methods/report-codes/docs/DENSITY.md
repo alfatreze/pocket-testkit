@@ -1,5 +1,7 @@
 # QR density: what is reasonable
 
+*Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
+
 Measured by `tests/qr_density_study.py` (table: [qr_density.md](qr_density.md)): for each version a payload that **fills** it (level L, byte mode), drawn on the 400x360 screen with the largest whole-pixel modules, then decoded after a lossless screenshot, JPEG q80, and three **simulated** phone photos (tilt, blur sigma 1.0/1.6/2.4, noise, JPEG 70). Two decoders: Aruco+classic ("any") and OpenCV's classic detector alone (the nearest stand-in for a phone scanner here).
 
 | Level | QR version | Bytes | Module size on 400x360 | What the study showed | Friction |

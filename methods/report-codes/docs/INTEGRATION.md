@@ -1,5 +1,7 @@
 # Integrating pocket-testkit into a project
 
+*Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
+
 Two ways in: **with an AI coding agent** or **by hand**. Both end at the same place: your device draws a picture, `decode.py` reads it, your code parses the payload.
 
 ## What you are wiring together
@@ -49,7 +51,7 @@ QR has **three density levels**, measured in `docs/qr_density.md` (see [DENSITY.
 
 Works with Claude Code, Codex or any agent that reads a rules file.
 
-1. **Give the agent the rules.** Copy [`agent/AGENTS.snippet.md`](../agent/AGENTS.snippet.md) into your project's `AGENTS.md` (Codex and others) or `CLAUDE.md` (Claude Code). It tells the agent the three tiers, the decoder command, that it must **not** raise the QR density on its own, and what evidence to claim.
+1. **Give the agent the rules.** Copy [`agent/AGENTS.snippet.md`](../../../agent/AGENTS.snippet.md) into your project's `AGENTS.md` (Codex and others) or `CLAUDE.md` (Claude Code). It tells the agent the three tiers, the decoder command, that it must **not** raise the QR density on its own, and what evidence to claim.
 2. **Add the kit.** Copy a tagged release into your repo (e.g. `third_party/pocket-testkit/`) and record the path, commit and SHA-256 in your provenance file. No submodule, so an upstream change cannot break you silently.
 3. **Prompt it.** A prompt that works:
 

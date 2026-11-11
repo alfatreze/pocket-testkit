@@ -1,4 +1,6 @@
-# Sample test pages (the "sample core" source)
+# Sample test pages
+
+*Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
 
 Nine pages that show every carrier at a typical size and at its limit, for any screen size. The page logic is portable C (`c/sample/pk_sample.h`: no libc, no malloc, no I/O), so the same file renders on a PC today and is what a Pocket core's firmware would call. **Status: host-tested only** (all 54 pictures below decode back to the exact payload, and two injected bugs are caught). It has not been built into a Pocket core or run on a Pocket; that needs a core wrapper, which this kit does not yet include.
 

@@ -1,6 +1,6 @@
 # Audit: testing an Analogue Pocket core with an AI agent
 
-Review of [TESTING_STACK.md](TESTING_STACK.md) against the Analogue developer docs and the evidence-graded knowledge base of the `analogue-pocket-dev` skill (KB ids below). Evidence labels: **docs** (Analogue text), **KB-nnn** (with its status), **project** (seen in Tau Alpha's repo), **inference** (my reasoning, untested), **unverified** (needs a test on your setup).
+Review of an earlier testing-stack draft (since split into [methods/](../../methods/README.md)) against the Analogue developer docs and the evidence-graded knowledge base of the `analogue-pocket-dev` skill (KB ids below). Evidence labels: **docs** (Analogue text), **KB-nnn** (with its status), **project** (seen in Tau Alpha's repo), **inference** (my reasoning, untested), **unverified** (needs a test on your setup).
 
 ## 1. Verdict on the proposed items
 
@@ -17,7 +17,7 @@ Review of [TESTING_STACK.md](TESTING_STACK.md) against the Analogue developer do
 | 9 | Fuzzing C parsers | Keep | Cheap. Also run the parser once on the real soft CPU in simulation, since stack and heap limits differ from the host. |
 | 10 | CI | Keep, split in two | A hosted runner cannot practically run a Quartus fit; keep fits on a VM and run host tests in CI. |
 
-Corrections made to TESTING_STACK.md as a result: caveats on rows 4 and 5, the "few hundred logic cells" figure marked unmeasured, a warning about clone USB Blasters, and the Pocket's built-in debug channels added.
+Corrections made to that draft as a result: caveats on rows 4 and 5, the "few hundred logic cells" figure marked unmeasured, a warning about clone USB Blasters, and the Pocket's built-in debug channels added.
 
 ## 2. What the list is missing (Pocket-specific, cheap)
 

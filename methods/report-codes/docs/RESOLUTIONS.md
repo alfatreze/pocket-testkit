@@ -1,5 +1,7 @@
 # Resolutions: how much a screen holds
 
+*Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
+
 The pixel grid keeps the same pixel size on every screen (robust cells of 4 px by default, lossless 1 px per 16 bits), so a bigger surface carries more and a smaller one less. The block is a square centred on the screen, sized from the screen's short side. Numbers are payload bytes (the 16-byte header is already deducted), from `tpg.capacity()`.
 
 ## Analogue Pocket range

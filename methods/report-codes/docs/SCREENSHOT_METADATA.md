@@ -1,5 +1,7 @@
 # The Pocket adds the core's identity to every screenshot
 
+*Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
+
 A screenshot taken with Menu+Start is a normal PNG **followed by extra bytes** after its last chunk. Ordinary PNG readers ignore them (every decoder here still works), but they say which core made the picture. Analogue's changelog for framework 1.1 (beta 6) confirms the intent: "all metadata is contained within the PNG file".
 
 ## What is in the file

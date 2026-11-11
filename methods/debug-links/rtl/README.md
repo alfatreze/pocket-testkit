@@ -13,7 +13,7 @@ Drop-in blocks to read and write a core's registers from a PC. Simulated with iv
 | `common/pk_demo_regs.sv` | ID, scratch, counter: proves the link before your registers are wired |
 | `common/pk_toggle_sync.sv` | Single-bit toggle synchroniser (never use it per bit on a bus, KB-009) |
 
-Host: `host/pk_vjtag.tcl` (`quartus_stp -t`), `python/pk_link.py`, `host/sysconsole_master.tcl` (master path). Pick the link: [docs/DEBUG_LINK_CHOICE.md](../docs/DEBUG_LINK_CHOICE.md).
+Host: `../host/pk_vjtag.tcl` (`quartus_stp -t`), `../host/pk_link.py`, `../host/sysconsole_master.tcl` (master path). Pick the link: [CHOOSING](../CHOOSING.md).
 
 ## Add it to a core
 

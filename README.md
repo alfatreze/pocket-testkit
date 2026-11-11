@@ -1,150 +1,105 @@
-<p align="center"><img src="docs/logo/banner.png" alt="pocket-testkit: a pixel handheld showing a colour grid, in the four CGA colours" width="640"></p>
+<p align="center"><img src="assets/logo/banner.png" alt="pocket-testkit: a pixel handheld showing a colour grid, in the four CGA colours" width="640"></p>
 
 # pocket-testkit
 
-Testing tools for Analogue Pocket cores and other small hardware or firmware projects, built for work with an AI agent:
+A toolkit and a field guide for **testing Analogue Pocket cores** (and other small hardware or firmware projects), built for work with an AI agent. It organises the testing methods from cheap file checks to the device, says what each one finds, what it costs and how to choose, and ships tools, RTL and templates you can reuse.
 
-1. **Report codes**: get test and diagnostic results off a device as a picture (screenshot or phone photo), then decode them on a PC. Any screen size.
-2. **Testing methods and docs**: what to check at each cost level, which debug link to use, and how to prove a result honestly.
-3. **A Claude project starter**: CLAUDE.md, status files, a test ladder with one verdict, and checks you can copy into a project.
+Extracted from the Tau project for the Analogue Pocket. Apache-2.0.
 
-Extracted from the Tau project for the Analogue Pocket (Apache-2.0).
+## Contents at a glance
 
-![The three carriers at their minimum (160x144) and maximum (800x480) density](docs/img/preview.png)
-
-*Pixel-exact, same pixel size on both screens, filled to capacity with random data. Regenerate with `python3 examples/make_preview.py`.*
-
-## Where to start
-
-| I want to... | Go to |
-|---|---|
-| decide how to test a Pocket core, from cheap checks to the device | [docs/TESTING_METHODS.md](docs/TESTING_METHODS.md) |
-| set up a project for Claude Code with a test ladder | [templates/claude-project](templates/claude-project/README.md) |
-| send results out of a device as a picture | [Report codes](#report-codes) below, then [INTEGRATION](docs/INTEGRATION.md) |
-| try the codes without a device | [Sample test pages](docs/SAMPLE_CORE.md) |
-| pick a JTAG or serial debug link, or add a register window to a core | [DEBUG_LINK_CHOICE](docs/DEBUG_LINK_CHOICE.md), [rtl/](rtl/README.md) |
-| see what was reviewed against Analogue's docs | [TESTING_AUDIT](docs/TESTING_AUDIT.md), [TESTING_STACK](docs/TESTING_STACK.md) |
-
-## Report codes
-
-### Pick a carrier
-
-One payload and one CRC32, three ways to draw it. Choose by how the picture leaves the device.
-
-| Tier | Carrier | Survives | Use when | Capacity |
-|---|---|---|---|---|
-| **L** | Lossless colour grid | a lossless PNG only | you copy the screenshot file off | table below (most) |
-| **R** | Robust colour grid | JPEG q80+, chat resize | the screenshot goes through chat or email | table below |
-| **Q** | QR code | a phone photo (small codes), any scanner app | an **external photo** of the screen | 271 B (photo) to 2,699 B (screenshot only) |
-
-A damaged picture fails loudly on the CRC32; it is never decoded to a wrong payload.
-
-### Capacity by screen size
-
-The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted. Rows are resolutions a Pocket core realistically runs at (for reference: 160x144 Game Boy, 240x160 Game Boy Advance, 256x224 NES/SNES, 400x360 what Tau uses, 800x720 the Pocket's maximum).
-
-| Resolution | Grid L, lossless | Grid R, robust (4 px cells) | QR safe max (photo) | QR largest that fits |
-|---|---|---|---|---|
-| 160x144 | 41,456 | 956 | 271 (2 px) | 321 (v11) |
-| 240x160 | 51,184 | 1,184 | 271 (2 px) | 425 (v13) |
-| 256x224 | 100,336 | 2,336 | 271 (3 px) | 929 (v21) |
-| 320x240 | 115,184 | 2,684 | 271 (3 px) | 1,091 (v23) |
-| 400x360 | 259,184 | 6,059 | 271 (5 px) | 2,699 (v38) |
-| 640x480 | 460,784 | 10,784 | 271 (7 px) | 2,699 (v38) |
-| 800x480 | 460,784 | 10,784 | 271 (7 px) | 2,699 (v38) |
-| 800x720 | 1,036,784 | 24,284 | 271 (11 px) | 2,699 (v38) |
-
-The table stops at 800x720, the largest video size the Pocket's core interface accepts (16x16 to 800x720 in Analogue's developer docs; not re-tested on hardware here). The codec has no such limit: it was tested up to 4K for other devices, see [docs/RESOLUTIONS.md](docs/RESOLUTIONS.md).
-
-**QR columns.** The *safe max* is the `photo` level (version 10, 271 bytes), the most a phone scanner is expected to read; in brackets the module size it is drawn with on that screen (the biggest whole-pixel size that fits). *Largest that fits* is the densest code the screen can draw with at least 2 px modules (version in brackets); anything above 271 bytes is for screenshots only. QR capacity is set by the QR version, not the screen, so a bigger screen only draws the same code bigger. Module size matters for photos: below 3 px, test with a real photo (the density study did not cover small screens).
-
-| QR density level | Version | Bytes | Meant for |
-|---|---|---|---|
-| `photo` (default) | 1-10 | 271 | a phone scanner |
-| `careful` | 11-22 | 1,003 | a steady, close, sharp photo (warns) |
-| `max` | 23-38 | 2,699 | screenshots only; refused unless confirmed |
-
-Why these limits, and the simulated-photo results behind them: [docs/DENSITY.md](docs/DENSITY.md). A robust grid with 8 px cells holds about a quarter of the R column and survives harsher scaling ([docs/RESOLUTIONS.md](docs/RESOLUTIONS.md)).
-
-### Quick start
-
-```bash
-pip install numpy pillow opencv-python
-
-python3 python/tpg.py encode report.bin shot.png --mode R --size 1280x720   # draw a grid for any screen
-python3 python/qr_tier.py "PKT1 PASS run=17" qr.png                         # draw a QR (density photo)
-python3 python/decode.py shot.png                                           # read any tier; --json, --out file
+```
+pocket-testkit/
+├── docs/            concepts: methodology, choosing a method, AI workflow, Pocket notes, reviews
+├── methods/         one folder per testing method (what, when, pros/cons, code, tests)
+│   ├── file-checks/      JSON limits, stale-bitstream check
+│   ├── host-tests/       reference models, golden vectors, mutation, coverage
+│   ├── fuzzing/          parsers under sanitizers
+│   ├── formal/           proofs for small control logic
+│   ├── simulation/       RTL, whole-core with a Pocket host model
+│   ├── timing-fit/       map gate, block fits, full fit, seeds
+│   ├── report-codes/     results out of a device as a picture (grid, QR)      [code]
+│   ├── debug-links/      JTAG and serial: live registers, memory, signals     [RTL]
+│   ├── pocket-native/    the Pocket's own debug log, event log, pause options
+│   └── ci/               continuous integration
+├── starter/         a Claude project starter: CLAUDE.md, rules, status files, test ladder, checks
+├── agent/           rules to paste into an AI agent's instructions
+└── assets/          logo
 ```
 
-Rust: `cargo run --features cli --bin pocket-decode -- shot.png` in `rust/`. On a device, copy `c/tpg.h` and `c/qr/`. Full wiring, by hand or with an AI coding agent: [docs/INTEGRATION.md](docs/INTEGRATION.md).
+## The methods
 
-### What the pictures look like
+Ordered by when they pay off. Full catalogue: [methods/](methods/README.md).
 
-Left: the 400x360 screen as drawn on the device. Right: the code enlarged. Regenerate with `python3 examples/make_examples.py`.
+| Phase | Method | Answers | Cost | In this kit |
+|---|---|---|---|---|
+| Check before you build | [File checks](methods/file-checks/README.md) | Are the JSON and package files right? | seconds | tools + tests |
+| | [Host tests](methods/host-tests/README.md) | Is the algorithm, format or parser right? | low | used throughout |
+| | [Fuzzing](methods/fuzzing/README.md) | Does a parser survive any input? | low | guide |
+| | [Formal](methods/formal/README.md) | Can this control logic never overflow or deadlock? | medium | guide |
+| Simulate | [Simulation](methods/simulation/README.md) | Does the RTL, or the whole core, behave? | minutes to an hour | link-RTL testbenches |
+| Build gates | [Timing and fit](methods/timing-fit/README.md) | Does it meet timing and fit? | minutes to hours | guide |
+| Observe on the device | [Report codes](methods/report-codes/README.md) | What did the device do, from anyone, with no cable? | none | **code, tests, real-device use** |
+| | [Debug links](methods/debug-links/README.md) | What are the live registers, memory, signals? | cable and a build | RTL, simulated only |
+| | [Pocket's own tools](methods/pocket-native/README.md) | Why does it fail to boot or load? | none | guide |
+| Process | [CI](methods/ci/README.md) | Did something break that nobody re-ran? | low | one workflow |
 
-**L, lossless grid** (2,352-byte sample report; a 40,000-byte report just grows the block)
+"Guide" = described with trade-offs and references, no code. Nothing here has been run on a Pocket except the report codes.
 
-![Lossless grid](docs/img/tier_l_lossless.png)
-![Large lossless grid](docs/img/tier_l_large.png)
+![The three report-code carriers at their minimum (160x144) and maximum (800x480) density](methods/report-codes/docs/img/preview.png)
 
-**R, robust grid** (decodes after JPEG q80)
+*Report codes: a lossless grid, a robust grid and a QR code, pixel-exact at two screen sizes.*
 
-![Robust grid](docs/img/tier_r_robust.png)
+## How to choose
 
-**Q, QR code**: a small summary code (photo level), and a dense one carrying the whole record (version 23, 2 px modules, screenshot only)
+Start from the question ([full guide](docs/choosing.md)):
 
-![QR code](docs/img/tier_q_qr.png)
-![Dense QR code](docs/img/tier_q_dense.png)
-
-**Simulated phone photos** (tilt, blur, noise, JPEG q70): the QR decodes, the colour grid does not. That is why tier Q exists.
-
-| QR | Robust grid |
+| I need to know... | Use |
 |---|---|
-| ![](docs/img/sim_photo_qr.jpg) | ![](docs/img/sim_photo_robust_grid.jpg) |
+| whether my files and package are right | file checks |
+| whether my code or format is right | host tests, then fuzzing for parsers |
+| whether my RTL works, or my core boots | simulation |
+| whether it meets timing | timing and fit gates |
+| what the device did, from a tester or away from my desk | **report codes** |
+| the live registers or signals, at my desk | a debug link ([which one](methods/debug-links/CHOOSING.md)) |
+| why it fails to boot or load | the Pocket's own tools |
 
-**Pocket screenshots also say which core made them.** The Pocket appends the core's author, name and version to the PNG (after its last chunk), so you can identify a report's source without putting it in the payload: [docs/SCREENSHOT_METADATA.md](docs/SCREENSHOT_METADATA.md).
+Prefer the method that answers earliest on the ladder; do both a link (to find a bug) and a report code (to prove the fix on the shipped build) when you can.
 
-## Documentation
+## Guides
 
-| Topic | Docs |
+| Guide | Read it for |
 |---|---|
-| Testing | [TESTING_METHODS](docs/TESTING_METHODS.md) (methods, links, methodology), [TESTING_STACK](docs/TESTING_STACK.md) (the layers), [TESTING_AUDIT](docs/TESTING_AUDIT.md) (review against Analogue's docs, AI workflow) |
-| Debug links | [DEBUG_LINK_CHOICE](docs/DEBUG_LINK_CHOICE.md), [rtl/README](rtl/README.md) |
-| Report codes | [INTEGRATION](docs/INTEGRATION.md) (by hand or with an AI agent), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md), [SAMPLE_CORE](docs/SAMPLE_CORE.md) |
-| Claude projects | [templates/claude-project](templates/claude-project/README.md), [agent/AGENTS.snippet.md](agent/AGENTS.snippet.md) |
-| External | [Analogue developer docs](https://www.analogue.co/developer/docs), [core template](https://github.com/open-fpga/core-template), [analogue-pocket-dev skill](https://github.com/alfatreze/analogue-pocket-dev-skill) (knowledge base), [agg23's Pocket utils and wiki](https://github.com/agg23/analogue-pocket-utils), [Claude Code docs](https://docs.claude.com/en/docs/claude-code/overview) |
+| [Methodology](docs/methodology.md) | The ladder, evidence labels, independent oracle, one verdict, one device trip |
+| [Choosing a method](docs/choosing.md) | By question or situation |
+| [AI workflow](docs/ai-workflow.md) | Using an AI agent efficiently, mistakes to turn into checks |
+| [Pocket notes](docs/pocket-notes.md) | Boot order, what a host model must exercise, link port, fit rules |
+| [Testing audit](docs/reviews/testing-audit-2026-11.md) | The review against Analogue's docs and the knowledge base |
+| [Documentation index](docs/README.md) | Everything, by level |
 
-## What is in the repo
+## Start a project
 
-| Path | What |
+[`starter/`](starter/README.md) has a `CLAUDE.md`, rules (evidence labels, test ladder, mutation, long jobs, card writes, worktrees), status, roadmap, audit-trail and decision files, a test ladder (`ladder.json`) with one runner (`verdict.py`) that cannot claim more than was run, the file checks, an example settings file and a skill. Copy and adapt.
+
+## Run the tests
+
+Each method keeps its tests in its own folder; run them from there.
+
+| Folder | Command | Needs |
+|---|---|---|
+| `methods/report-codes` | `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py`, `test_pocket_meta.py`, `test_sample.py`; `cargo test --features cli` in `rust/` | `pip install numpy pillow opencv-python segno`, a C compiler, Rust |
+| `methods/debug-links` | `python3 tests/test_debug_link.py` | iverilog |
+| `starter` | `python3 tests/test_templates.py` | nothing |
+
+## Evidence status
+
+| Part | Evidence |
 |---|---|
-| `python/`, `c/`, `rust/` | Report-code codecs and decoders: Python, C (no libc, no malloc), an OS-independent Rust crate ([rust/README](rust/README.md)) |
-| `c/sample/`, `examples/` | Sample test pages, gallery and picture generators |
-| `rtl/`, `host/`, `sim/` | Debug-link RTL (Virtual JTAG window, JTAG-master adapter, byte stream), Tcl host scripts, testbenches; simulated only |
-| `tools/` | `choose_link.py` (pick a debug link from project facts), QR table generator |
-| `templates/claude-project/` | CLAUDE.md, status files, rules, test ladder, checks, settings example, a skill |
-| `docs/`, `agent/` | Documentation; rules to paste into an agent's instructions |
-| `tests/` | All tests and the density study |
-
-Tests: `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, `test_sample.py`, `test_debug_link.py` (needs iverilog), `test_templates.py`, and `cargo test --features cli` in `rust/`.
-
-## Format (TPG2)
-
-A 16-byte header (`TPG2`, mode, flags, reserved, payload length, CRC32; big endian), then the payload, in a square block centred on the screen. The block side comes from a ladder that depends only on the screen's short side; flag byte 5 holds the robust cell size when it is not 4. At 400x360 the output is byte-identical to the original Pocket format (`tests/golden_400x360.json`). Details: the docstring in `python/tpg.py`.
-
-## Status
-
-| | Evidence |
-|---|---|
-| Grid on a real Pocket | Tau screenshots from its test cores decode; the Python and Rust decoders agree on all 31 real captures of Tau Omega's test data |
-| QR on a real Pocket | decoded from real screenshots, up to a 2,281-byte dense code; the encoder also matches `segno` for all 38 versions |
-| Rust crate | tests pass in CI on Linux, macOS and Windows; the core and QR build for WebAssembly |
-| Other screen sizes | host tests only (13 sizes, Python and C equal pixel for pixel) |
-| Phone photos | used in practice: the owner photographed Tau Alpha's QR pages with a phone. Those photos and their results are **not recorded in this repo**, so the density limits and the example photos here are simulated |
-
-Also: the debug-link RTL and sample pages are simulated or host-tested only, never run on a Pocket. Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a Pocket core wrapper for the sample pages, coverage, formal and fuzzing setups.
+| Report codes | Grids and QR decode from real Pocket screenshots of Tau cores; Python and Rust decoders agree on 31 real captures; owner's real phone photos of QR pages exist but are not recorded here, so the photo limits and example photos are simulated; other screen sizes host-tested only; Rust crate in CI on Linux, macOS, Windows, WebAssembly |
+| Debug-link RTL | iverilog simulations and mutation checks; **never fitted or run on a Pocket** |
+| File checks, starter tools | host tests |
+| Guides | reviewed against Analogue's docs and a knowledge base; items marked unverified need a test on your setup |
 
 ## Licence
 
 Apache License 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). The grid codec and QR encoder were written for Tau by the same author and are relicensed here. No copyleft code is included.
-
