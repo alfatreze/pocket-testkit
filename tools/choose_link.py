@@ -61,6 +61,11 @@ def choose(f: dict):
         if f.get("nios_tools") and f.get("has_avalon"):
             add("jtag-uart", 65, "a ready byte stream into Platform Designer systems",
                 "needs nios2-terminal; the program can block without a terminal; one JTAG client at a time")
+    if f.get("case_closed") and need in ("stream", "registers", "memory"):
+        add("link-port or pad UART (3.3 V adapter)", 75,
+            "works with the rear cover on; the Blaster header needs it off on a retail unit",
+            "needs a UART in the core; link_port true and cartridge_adapter 0 power the cart port (keep a cart out); voltage is a mechanical switch, not core.json (KB-248)",
+            "dbg_tx/dbg_rx and user1/user2 pads exist in the template, undocumented (KB-249)")
     if f.get("fast_events"):
         for o in out:
             o[2].append("fast events: latch them in the core, then read; do not poll")
@@ -91,7 +96,8 @@ def main(argv=None):
     f = json.load(open(a.json)) if a.json else {
         "where": a.where, "need": a.need, "third_party": a.third_party, "has_blaster": not a.no_blaster,
         "has_regbus": a.has_regbus, "has_cpu": a.has_cpu, "has_avalon": a.has_avalon,
-        "headroom": a.headroom, "fast_events": a.fast_events, "nios_tools": a.nios_tools}
+        "headroom": a.headroom, "fast_events": a.fast_events, "nios_tools": a.nios_tools,
+        "case_closed": a.case_closed}
     for r in choose(f):
         print(f"{r['score']:3d}  {r['link']}")
         for x in r["reasons"]:

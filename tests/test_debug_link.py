@@ -28,6 +28,7 @@ def test_choice_rules():
     assert names(need="signals", headroom="ok")[0] == "signaltap"
     assert "signaltap" not in names(need="signals", headroom="low")
     assert names(need="stream")[0].startswith("vjtag-stream")
+    assert any(n.startswith("link-port") for n in names(need="stream", case_closed=True))
 
 
 def test_rtl_sims():
