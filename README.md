@@ -73,4 +73,4 @@ Spec file with golden vectors; Reed-Solomon for tier R; multi-QR for full report
 
 ## Licence and provenance
 
-MIT. The grid codec and the QR encoder were written for the Tau project (itself MIT); the QR encoder follows ISO/IEC 18004 with structure after Nayuki's reference layout, per its own header. No copyleft code is included; the colour-code alternative JAB was assessed and left out.
+Apache License 2.0 (see `LICENSE` and `NOTICE`). The grid codec and the QR encoder were written for the Tau project by the same author and are relicensed here; the QR encoder follows ISO/IEC 18004, with structure after Nayuki's reference layout, per its own header. No copyleft code is included; the colour-code alternative JAB was assessed and left out.

@@ -1,0 +1,7 @@
+pocket-testkit
+Copyright 2026 alfatreze
+
+The grid codec (python/tpg.py, c/tpg.h) and the QR encoder (c/qr/) were written for the Tau project by the same author and are
+relicensed here under Apache-2.0. The QR encoder follows ISO/IEC 18004; its structure is after Nayuki's QR Code generator
+reference layout (per the header of c/qr/qrcode.h). Test and decode tools use segno, OpenCV, NumPy and Pillow, which are not
+included in this repository.
