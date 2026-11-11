@@ -1,5 +1,7 @@
 # Testing stack: what to check before the Pocket
 
+Reviewed against the Analogue docs and a knowledge base: [TESTING_AUDIT.md](TESTING_AUDIT.md).
+
 The report codes (grid and QR) are for getting data **out of a device**. They answer "what happened on the Pocket?". They are not the first line of testing. Most bugs should be caught at the desk, before a human ever sees the device. This page lists the layers worth having, in the order they pay off, for projects where an AI agent writes and reviews most of the code.
 
 Each row is a suggestion with a cost and a catch. None of it is built into this kit, and evidence for each row has to come from your own project.
@@ -11,8 +13,8 @@ Each row is a suggestion with a cost and a catch. None of it is built into this 
 | 1 | **Bit-exact reference models** (Python or C) compared with the RTL in simulation | Wrong arithmetic, wrong format handling | Medium | Usually the layer people already have. |
 | 2 | **Mutation sweeps**: break the design on purpose, confirm a test fails | Tests that never exercise a feature | Low to medium | Found untested hold, FIFO-clear and start/clear cases in one project. |
 | 3 | **Coverage** (Verilator line, toggle, FSM state) | The same gaps, without guessing mutants | Low | Run it first, then spend mutants where coverage is thin. |
-| 4 | **Per-block timing fit**: a stand-alone Quartus project per block at the target clock | Fmax misses found in minutes instead of after a full fit | Low | A bit-exact decoder can still fail timing at the target clock. In one project 3,217 endpoints failed at 100 MHz and it showed up 1h35m into the fit. |
-| 5 | **Synthesis-only gate**: `quartus_map` plus a quick STA on every RTL change | The same, for the whole design, before the long fit | Low | Minutes against hours. |
+| 4 | **Per-block timing fit**: a stand-alone Quartus project per block at the target clock | Fmax misses found in minutes instead of after a full fit | Low | Treat the result as an upper bound: placement of the integrated design is worse and varies by seed (see [TESTING_AUDIT.md](TESTING_AUDIT.md)). A bit-exact decoder can still fail timing at the target clock. In one project 3,217 endpoints failed at 100 MHz and it showed up 1h35m into the fit. |
+| 5 | **Synthesis-only gate**: `quartus_map` plus a quick STA on every RTL change | The same, for the whole design, before the long fit | Low | Minutes against hours, but slack before placement is only an estimate: compare it with a past fit before trusting it. Parsing the map report (RAM modes, resource counts, ignored constraints) is the safer use. |
 | 6 | **Whole-core simulation**: stand-ins for PLL, FIFO and RAM IP, a host model of the bridge and data slots, your memory chip model, and a frame dumper compared with golden images | Wiring mistakes (an unconnected signal put X into the CPU in one project) | High, once | Turns "boot, read a file, show the picture" into a test. A Pocket session then confirms instead of discovers. |
 | 7 | **Post-synthesis netlist simulation** with the same vectors | RAM read-during-write behaviour, initial values, inference differences | Medium | Run it where RAM inference has bitten you before. |
 | 8 | **Formal checks** (SymbiYosys) on small control logic: FIFOs, port muxes, tile state machines | "Never overflows", "done goes to exactly one client", "no deadlock" | Medium | Random tests say nothing failed; formal says nothing can fail up to a bound. For clock crossings, sweep many clock ratios and phases in simulation. |
@@ -36,15 +38,19 @@ Use the grids and the QR when:
 
 Prefer a cable when you are at your desk and need live or high-rate data.
 
+## Built-in Pocket channels
+
+The Pocket already offers a time-stamped debug event log (target command 0152), Debug Logging to `/System/Logs/`, Pause Core Boot and Pause Load Data, and a Statistics overlay. Details and caveats: [TESTING_AUDIT.md](TESTING_AUDIT.md).
+
 ## JTAG options at the desk
 
 | Option | What you get | Catch |
 |---|---|---|
 | ISSP or a few probes | Live reads of selected registers | A separate instrumented build. Polling cannot catch fast events; latch the value in the core and read it afterwards. |
 | SignalTap | Waveforms | Takes block RAM and logic; a probe change means a re-fit. |
-| JTAG-to-Avalon master (System Console `master`) | Scripted reads and writes of a memory-mapped bus, so an agent can read any register | A few hundred logic cells and little block RAM. Not yet tried in the project that motivated this page. |
+| JTAG-to-Avalon master (System Console `master`) | Scripted reads and writes of a memory-mapped bus, so an agent can read any register | Resource cost not measured here (expected small). Not yet tried in the project that motivated this page. |
 | Virtual JTAG or JTAG-UART | A byte stream in and out | Needs a small core-side block. |
-| Link-cable port as a serial line | A UART to a cheap USB-serial adapter, no Quartus needed | Needs `link_port: true` in the core JSON and a UART in the core; reported to degrade above about 6 MHz. Check the pin and voltage details before wiring. |
+| Link-cable port as a serial line | A UART to a cheap USB-serial adapter, no Quartus needed | Needs `link_port: true` and `cartridge_adapter: 0` (which powers the cart port, so keep a game cart out) and a UART in the core; reported to degrade above about 6 MHz. Check pin and voltage details before wiring. Never put a clone USB Blaster on the JTAG header (reported to have killed a Pocket). |
 
 A scripted JTAG link is also what lets an AI agent drive and read the real device directly. The report codes are the slower, free alternative that anyone can use.
 
