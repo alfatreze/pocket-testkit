@@ -86,6 +86,7 @@ def main(argv=None):
     p.add_argument("--headroom", choices=("low", "ok"), default="ok")
     p.add_argument("--fast-events", action="store_true")
     p.add_argument("--nios-tools", action="store_true")
+    p.add_argument("--case-closed", action="store_true", help="retail unit, cover must stay on")
     a = p.parse_args(argv)
     f = json.load(open(a.json)) if a.json else {
         "where": a.where, "need": a.need, "third_party": a.third_party, "has_blaster": not a.no_blaster,
