@@ -109,4 +109,5 @@ Then the step no host test replaces: take a **real** picture on the real device 
 - A screenshot re-saved as JPEG or resized breaks tier L; use R or keep the PNG.
 - A dense QR (2 px modules) decodes from a PNG with `qr_decode.py` but a phone will not scan it.
 - The default macOS SDK can fail to link the native QR helper; `qr_tier.py` retries other installed SDKs.
+- A Pocket screenshot already carries the core name and version ([SCREENSHOT_METADATA.md](SCREENSHOT_METADATA.md)): read it with `python/pocket_meta.py` instead of repeating it in the record.
 - Do not put a device id or other private data in a record that may be posted publicly.

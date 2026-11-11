@@ -85,18 +85,20 @@ Left: the 400x360 screen as drawn on the device. Right: the code enlarged. Regen
 |---|---|
 | ![](docs/img/sim_photo_qr.jpg) | ![](docs/img/sim_photo_robust_grid.jpg) |
 
+**Pocket screenshots also say which core made them.** The Pocket appends the core's author, name and version to the PNG (after its last chunk), so you can identify a report's source without putting it in the payload: [docs/SCREENSHOT_METADATA.md](docs/SCREENSHOT_METADATA.md).
+
 ## What is in the repo
 
 | Path | What |
 |---|---|
-| `python/` | `decode.py` (any tier), `tpg.py` (grid encode/decode), `qr_tier.py` (QR draw + density guard), `qr_decode.py` (QR read) |
+| `python/` | `decode.py` (any tier), `pocket_meta.py` (core info in Pocket screenshots), `tpg.py` (grid encode/decode), `qr_tier.py` (QR draw + density guard), `qr_decode.py` (QR read) |
 | `c/` | `tpg.h` (grid core), `qr/` (QR encoder, no libc, no malloc, versions 1-38) |
 | `rust/` | OS-independent decoder crate: no dependencies in the core, `png` / `jpeg` / `qr` features, `pocket-decode` binary ([rust/README.md](rust/README.md)) |
-| `docs/` | [INTEGRATION](docs/INTEGRATION.md), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), logo |
+| `docs/` | [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md) (the core info the Pocket adds to screenshots), [INTEGRATION](docs/INTEGRATION.md), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), logo |
 | `agent/` | [`AGENTS.snippet.md`](agent/AGENTS.snippet.md): rules to paste into an AI agent's instructions |
 | `tests/` | tests and the density study |
 
-Tests: `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), and `cargo test --features cli` in `rust/`.
+Tests: `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, and `cargo test --features cli` in `rust/`.
 
 ## Format (TPG2)
 

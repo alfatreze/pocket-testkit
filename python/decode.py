@@ -34,14 +34,19 @@ def main(argv=None):
     try: tier, payload = decode(a.image, tuple(int(v) for v in a.native.lower().split("x")) if a.native else None)
     except ValueError as e: print("invalid: %s" % e, file=sys.stderr); return 1
     if a.out: open(a.out, "wb").write(payload)
+    try:
+        import pocket_meta; meta = pocket_meta.read(a.image)
+    except Exception: meta = None     # no Pocket trailer (a photo, an edited copy): fine
     if a.json:
         d = {"tier": tier, "length": len(payload)}
+        if meta: d["pocket"] = {k: meta[k] for k in ("author", "core", "version", "file", "platform_id", "platform_name", "consistent")}
         try: d["text"] = payload.decode("utf-8")
         except UnicodeDecodeError: d["payload_hex"] = payload.hex()
         print(json.dumps(d))
     else:
         try: body = payload.decode("utf-8")
         except UnicodeDecodeError: body = payload.hex()
+        if meta: print("from %s %s (%s)" % (meta["core"], meta["version"], meta["author"]))
         print("tier %s, %d bytes\n%s" % (tier, len(payload), body[:2000]))
     return 0
 
