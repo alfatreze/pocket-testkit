@@ -57,6 +57,7 @@ QR decodes; the colour grid does not, which is why tier Q exists. Results in [`d
 ## Decoders and integration
 
 - **`python/decode.py <image>`** reads any picture (grid L or R, or QR) and says which tier it found. `--json`, `--out file.bin`; exit 1 = unreadable.
+- **Rust:** `rust/` is an OS-independent crate (`pocket-testkit`, no dependencies in the core; `png`, `jpeg`, `qr` features; a `pocket-decode` binary). See [rust/README.md](rust/README.md).
 - Grids only: `python/tpg.py decode`. QR only: `python/qr_decode.py` (Aruco + classic, for dense codes).
 - **[docs/INTEGRATION.md](docs/INTEGRATION.md)** wires it into a project two ways: **with an AI coding agent** (a rules snippet, [`agent/AGENTS.snippet.md`](agent/AGENTS.snippet.md), a working prompt and a checklist for reviewing the agent's work) or **by hand** (C on the device, Python on the host, CI, verification, traps).
 

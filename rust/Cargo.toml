@@ -1,0 +1,32 @@
+[package]
+name = "pocket-testkit"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+license = "Apache-2.0"
+description = "Decode test reports carried as a picture: a colour pixel grid (any screen size) or a QR code. Pure Rust, no OS calls."
+repository = "https://github.com/alfatreze/pocket-testkit"
+readme = "README.md"
+keywords = ["qr", "screenshot", "diagnostics", "decoder", "analogue-pocket"]
+categories = ["encoding", "multimedia::images"]
+
+[dependencies]
+png = { version = "0.18", optional = true }
+rqrr = { version = "0.11", optional = true, default-features = false }
+zune-jpeg = { version = "0.5", optional = true }
+
+[features]
+default = []
+png = ["dep:png"]       # read PNG files / decode_png_bytes
+jpeg = ["dep:zune-jpeg"] # read JPEG files (phone photos, chat copies)
+qr = ["dep:rqrr"]       # tier Q: find and read a QR code
+cli = ["png", "jpeg", "qr"]
+
+[[bin]]
+name = "pocket-decode"
+path = "src/bin/pocket-decode.rs"
+required-features = ["cli"]
+
+[[test]]
+name = "fixtures_test"
+required-features = ["png", "jpeg", "qr"]

@@ -17,6 +17,7 @@ The kit owns the middle. **Your record format is yours**: the kit carries bytes 
 | Tool | What it reads | Needs |
 |---|---|---|
 | `python/decode.py <image>` | **Everything.** Tries the colour grid (L, R), then QR (Q), and says which it found. `--json`, `--out file.bin`. Exit 0 ok, 1 unreadable | numpy, Pillow; OpenCV for QR |
+| `rust/` crate (`pocket_testkit::decode_rgb`, `files::decode_file`, `pocket-decode`) | Everything, in Rust: embed in a desktop app, a CLI or WebAssembly. Raw RGB in, no OS calls in the core | none for the core; `png`/`jpeg`/`qr` features |
 | `python/tpg.py decode shot.png out.bin` | Grids only (L, R). Exit 1 on bad CRC | numpy, Pillow |
 | `python/qr_decode.py` (`decode(path_or_array)`) | QR only. Tries the Aruco detector first, then the classic one, at scales 1-4 (dense 2 px codes need it) | OpenCV |
 
