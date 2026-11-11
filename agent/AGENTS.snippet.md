@@ -8,3 +8,10 @@ This project carries test and diagnostic results off the device as a picture. Do
 - Screen size: pass the real screen size to the grid encoder (`size=(w, h)` / `tpg_init_ex`); never assume 400x360. Keep the 4 px cell unless asked. QR does not depend on the screen.
 - Payload meaning is the project's, not the kit's: parse it in the project's own code.
 - After any change: `tests/test_decode_and_density.py`, `tests/test_tpg_resolutions.py`, `tests/test_tpg_c.py` and `tests/test_qr.py` must pass. Say which evidence you have: host test, a screenshot decoded, or a real device/photo. Do not call a QR "phone-readable" unless a real phone photo was decoded.
+
+## Debug link selection (pocket-testkit)
+
+- To pick between report codes, ISSP, SignalTap, a Virtual JTAG window, a JTAG-to-Avalon master, a JTAG UART or a serial link, read `docs/DEBUG_LINK_CHOICE.md` and run `python3 tools/choose_link.py` with facts you read from the project (fit report headroom, existing register bus or Avalon system, blaster available, desk or field). Do not guess the facts.
+- The RTL in `rtl/` is simulated only. Never describe it as working on hardware until `id` returned `0x504B0101` on a real Pocket. Never put a clone USB Blaster on the Pocket's JTAG header. Gate every link behind a macro so the shipped build has none.
+- Resource costs of these blocks on Cyclone V are not measured: read them from the fit report and record them.
+
