@@ -15,3 +15,8 @@ This project carries test and diagnostic results off the device as a picture. Do
 - The RTL in `rtl/` is simulated only. Never describe it as working on hardware until `id` returned `0x504B0101` on a real Pocket. Never put a clone USB Blaster on the Pocket's JTAG header. Gate every link behind a macro so the shipped build has none.
 - Resource costs of these blocks on Cyclone V are not measured: read them from the fit report and record them.
 
+## Test ladder and project starter (pocket-testkit)
+
+- For a new or existing project, adapt `templates/claude-project/` (CLAUDE.md, rules, status files, `ladder.json`, `tools/verdict.py`). Run `python3 tools/verdict.py` and read its one-line verdict; it reports manual rungs (fit, package check, device) as NOT RUN and never claims more evidence than was run.
+- Validate a Pocket core folder with `tools/check_pocket_json.py` and compare the card's bitstream with the build output using `tools/check_package.py` before any hardware claim. Method overview: `docs/TESTING_METHODS.md`.
+

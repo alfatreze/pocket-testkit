@@ -2,15 +2,32 @@
 
 # pocket-testkit
 
-Get test and diagnostic results **off a device as a picture**, then decode them on a PC. A screenshot or a phone photo of a report page is the transport: no cable, no network, no file system on the device.
+Testing tools for Analogue Pocket cores and other small hardware or firmware projects, built for work with an AI agent:
 
-Extracted from the report codes of the Tau project for the Analogue Pocket. It works on any screen size.
+1. **Report codes**: get test and diagnostic results off a device as a picture (screenshot or phone photo), then decode them on a PC. Any screen size.
+2. **Testing methods and docs**: what to check at each cost level, which debug link to use, and how to prove a result honestly.
+3. **A Claude project starter**: CLAUDE.md, status files, a test ladder with one verdict, and checks you can copy into a project.
+
+Extracted from the Tau project for the Analogue Pocket (Apache-2.0).
 
 ![The three carriers at their minimum (160x144) and maximum (800x480) density](docs/img/preview.png)
 
 *Pixel-exact, same pixel size on both screens, filled to capacity with random data. Regenerate with `python3 examples/make_preview.py`.*
 
-## Pick a carrier
+## Where to start
+
+| I want to... | Go to |
+|---|---|
+| decide how to test a Pocket core, from cheap checks to the device | [docs/TESTING_METHODS.md](docs/TESTING_METHODS.md) |
+| set up a project for Claude Code with a test ladder | [templates/claude-project](templates/claude-project/README.md) |
+| send results out of a device as a picture | [Report codes](#report-codes) below, then [INTEGRATION](docs/INTEGRATION.md) |
+| try the codes without a device | [Sample test pages](docs/SAMPLE_CORE.md) |
+| pick a JTAG or serial debug link, or add a register window to a core | [DEBUG_LINK_CHOICE](docs/DEBUG_LINK_CHOICE.md), [rtl/](rtl/README.md) |
+| see what was reviewed against Analogue's docs | [TESTING_AUDIT](docs/TESTING_AUDIT.md), [TESTING_STACK](docs/TESTING_STACK.md) |
+
+## Report codes
+
+### Pick a carrier
 
 One payload and one CRC32, three ways to draw it. Choose by how the picture leaves the device.
 
@@ -22,7 +39,7 @@ One payload and one CRC32, three ways to draw it. Choose by how the picture leav
 
 A damaged picture fails loudly on the CRC32; it is never decoded to a wrong payload.
 
-## Capacity by screen size
+### Capacity by screen size
 
 The grid keeps the same pixel size on every screen (1 px per 16 bits for L, 4 px cells for R), so a bigger screen holds more. Payload bytes, header already deducted. Rows are resolutions a Pocket core realistically runs at (for reference: 160x144 Game Boy, 240x160 Game Boy Advance, 256x224 NES/SNES, 400x360 what Tau uses, 800x720 the Pocket's maximum).
 
@@ -49,7 +66,7 @@ The table stops at 800x720, the largest video size the Pocket's core interface a
 
 Why these limits, and the simulated-photo results behind them: [docs/DENSITY.md](docs/DENSITY.md). A robust grid with 8 px cells holds about a quarter of the R column and survives harsher scaling ([docs/RESOLUTIONS.md](docs/RESOLUTIONS.md)).
 
-## Quick start
+### Quick start
 
 ```bash
 pip install numpy pillow opencv-python
@@ -61,7 +78,7 @@ python3 python/decode.py shot.png                                           # re
 
 Rust: `cargo run --features cli --bin pocket-decode -- shot.png` in `rust/`. On a device, copy `c/tpg.h` and `c/qr/`. Full wiring, by hand or with an AI coding agent: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
-## What the pictures look like
+### What the pictures look like
 
 Left: the 400x360 screen as drawn on the device. Right: the code enlarged. Regenerate with `python3 examples/make_examples.py`.
 
@@ -87,20 +104,29 @@ Left: the 400x360 screen as drawn on the device. Right: the code enlarged. Regen
 
 **Pocket screenshots also say which core made them.** The Pocket appends the core's author, name and version to the PNG (after its last chunk), so you can identify a report's source without putting it in the payload: [docs/SCREENSHOT_METADATA.md](docs/SCREENSHOT_METADATA.md).
 
+## Documentation
+
+| Topic | Docs |
+|---|---|
+| Testing | [TESTING_METHODS](docs/TESTING_METHODS.md) (methods, links, methodology), [TESTING_STACK](docs/TESTING_STACK.md) (the layers), [TESTING_AUDIT](docs/TESTING_AUDIT.md) (review against Analogue's docs, AI workflow) |
+| Debug links | [DEBUG_LINK_CHOICE](docs/DEBUG_LINK_CHOICE.md), [rtl/README](rtl/README.md) |
+| Report codes | [INTEGRATION](docs/INTEGRATION.md) (by hand or with an AI agent), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md), [SAMPLE_CORE](docs/SAMPLE_CORE.md) |
+| Claude projects | [templates/claude-project](templates/claude-project/README.md), [agent/AGENTS.snippet.md](agent/AGENTS.snippet.md) |
+| External | [Analogue developer docs](https://www.analogue.co/developer/docs), [core template](https://github.com/open-fpga/core-template), [analogue-pocket-dev skill](https://github.com/alfatreze/analogue-pocket-dev-skill) (knowledge base), [agg23's Pocket utils and wiki](https://github.com/agg23/analogue-pocket-utils), [Claude Code docs](https://docs.claude.com/en/docs/claude-code/overview) |
+
 ## What is in the repo
 
 | Path | What |
 |---|---|
-| `python/` | `decode.py` (any tier), `pocket_meta.py` (core info in Pocket screenshots), `tpg.py` (grid encode/decode), `qr_tier.py` (QR draw + density guard), `qr_decode.py` (QR read) |
-| `c/` | `tpg.h` (grid core), `qr/` (QR encoder, no libc, no malloc, versions 1-38) |
-| `rust/` | OS-independent decoder crate: no dependencies in the core, `png` / `jpeg` / `qr` features, `pocket-decode` binary ([rust/README.md](rust/README.md)) |
-| `c/sample/`, `examples/make_gallery.py` | [Sample test pages](docs/SAMPLE_CORE.md): nine pages for every carrier at typical sizes and limits, any screen size; host-tested, pictures in `docs/img/gallery` |
-| `rtl/`, `host/` | [Reusable debug-link RTL](rtl/README.md) (Virtual JTAG register window, JTAG-master adapter, byte stream), Tcl host scripts; simulated only |
-| `docs/` | [DEBUG_LINK_CHOICE](docs/DEBUG_LINK_CHOICE.md) (which JTAG or serial link, and how an AI picks), [TESTING_STACK](docs/TESTING_STACK.md) (what to check before the device, and where these codes fit), [TESTING_AUDIT](docs/TESTING_AUDIT.md) (review against Analogue's docs, AI workflow), [SCREENSHOT_METADATA](docs/SCREENSHOT_METADATA.md) (the core info the Pocket adds to screenshots), [INTEGRATION](docs/INTEGRATION.md), [DENSITY](docs/DENSITY.md), [RESOLUTIONS](docs/RESOLUTIONS.md), logo |
-| `agent/` | [`AGENTS.snippet.md`](agent/AGENTS.snippet.md): rules to paste into an AI agent's instructions |
-| `tests/` | tests and the density study |
+| `python/`, `c/`, `rust/` | Report-code codecs and decoders: Python, C (no libc, no malloc), an OS-independent Rust crate ([rust/README](rust/README.md)) |
+| `c/sample/`, `examples/` | Sample test pages, gallery and picture generators |
+| `rtl/`, `host/`, `sim/` | Debug-link RTL (Virtual JTAG window, JTAG-master adapter, byte stream), Tcl host scripts, testbenches; simulated only |
+| `tools/` | `choose_link.py` (pick a debug link from project facts), QR table generator |
+| `templates/claude-project/` | CLAUDE.md, status files, rules, test ladder, checks, settings example, a skill |
+| `docs/`, `agent/` | Documentation; rules to paste into an agent's instructions |
+| `tests/` | All tests and the density study |
 
-Tests: `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, and `cargo test --features cli` in `rust/`.
+Tests: `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, `test_sample.py`, `test_debug_link.py` (needs iverilog), `test_templates.py`, and `cargo test --features cli` in `rust/`.
 
 ## Format (TPG2)
 
@@ -116,7 +142,7 @@ A 16-byte header (`TPG2`, mode, flags, reserved, payload length, CRC32; big endi
 | Other screen sizes | host tests only (13 sizes, Python and C equal pixel for pixel) |
 | Phone photos | used in practice: the owner photographed Tau Alpha's QR pages with a phone. Those photos and their results are **not recorded in this repo**, so the density limits and the example photos here are simulated |
 
-Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a sample test core for the Pocket.
+Also: the debug-link RTL and sample pages are simulated or host-tested only, never run on a Pocket. Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a Pocket core wrapper for the sample pages, coverage, formal and fuzzing setups.
 
 ## Licence
 

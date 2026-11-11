@@ -1,0 +1,13 @@
+{
+  "_comment": "Example only: copy to .claude/settings.json and edit. Allows read-only and test commands, denies destructive git. Review before use.",
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git branch --show-current)",
+      "Bash(make verdict)", "Bash(make test-host)", "Bash(make test-sim)", "Bash(make gate-map)",
+      "Bash(python3 tools/verdict.py:*)", "Bash(python3 tools/check_pocket_json.py:*)", "Bash(python3 tools/check_package.py:*)"
+    ],
+    "deny": [
+      "Bash(git reset --hard:*)", "Bash(git stash:*)", "Bash(git push --force:*)", "Bash(rm -rf:*)"
+    ]
+  }
+}

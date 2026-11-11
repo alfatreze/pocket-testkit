@@ -1,0 +1,9 @@
+[
+  {"name": "json",     "label": "host",        "cmd": "python3 tools/check_pocket_json.py dist/Author.Core"},
+  {"name": "host",     "label": "host",        "cmd": "make test-host"},
+  {"name": "sim",      "label": "simulation",  "cmd": "make test-sim"},
+  {"name": "map",      "label": "quartus",     "cmd": "make gate-map"},
+  {"name": "fit",      "label": "quartus",     "cmd": "make fit", "manual": true},
+  {"name": "package",  "label": "quartus",     "cmd": "python3 tools/check_package.py build/core.rbf_r $CARD/Cores/Author.Core/core.rbf_r", "manual": true},
+  {"name": "pocket",   "label": "pocket",      "cmd": "(a person runs the core and records the result)", "manual": true}
+]
