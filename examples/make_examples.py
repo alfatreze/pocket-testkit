@@ -11,7 +11,7 @@ OUT = os.path.join(ROOT, "docs", "img"); os.makedirs(OUT, exist_ok=True)
 W, H = tpg.W, tpg.H
 
 _rows = ",".join('["t%03d",%d,%d]' % (i, i % 3, (i * 37) % 1000) for i in range(150))
-REPORT = ('{"report":"USER CHECK","run":17,"verdict":"PASS","build":"0.7.1","note":"sample record for pcket-testkit","tests":[' + _rows + ']}').encode()
+REPORT = ('{"report":"USER CHECK","run":17,"verdict":"PASS","build":"0.7.1","note":"sample record for pocket-testkit","tests":[' + _rows + ']}').encode()
 SUMMARY = "PKT1 PASS run=17 b=0.7.1 crc=%08X" % zlib.crc32(REPORT)
 
 def screen_png(arr565=None, rgb=None):

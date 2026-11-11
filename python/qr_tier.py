@@ -6,7 +6,7 @@ import os, subprocess, tempfile
 import numpy as np
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(os.path.dirname(HERE), "c", "qr", "qr_cli.c")
-_BIN = os.path.join(tempfile.gettempdir(), "pcket_qr_cli")
+_BIN = os.path.join(tempfile.gettempdir(), "pocket_qr_cli")
 
 def _build():
     if not os.path.exists(_BIN) or os.path.getmtime(_BIN) < os.path.getmtime(SRC):

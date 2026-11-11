@@ -1,4 +1,4 @@
-# pcket-testkit
+# pocket-testkit
 
 Carry test and diagnostic results **out of a device as a picture**, and decode them on a PC.
 Built for the Analogue Pocket (400x360 screen, screenshots are lossless), extracted from the Tau project's report codes.
