@@ -13,22 +13,35 @@ FONT = {
 "S": ["0111", "1000", "0110", "0001", "1110"], "I": ["1110", "0100", "0100", "0100", "1110"]}
 
 def icon():
-    w, h = 34, 26
+    """An Analogue Pocket in pixels: wide body with generous corners and shoulder bumps, a near-square screen (10:9, as the real one),
+    d-pad low on the left, two angled face buttons low on the right, select/start pills under the screen."""
+    w, h = 50, 32
     im = Image.new("RGB", (w, h), K); px = im.load()
     def rect(x0, y0, x1, y1, c):
         for y in range(y0, y1 + 1):
             for x in range(x0, x1 + 1): px[x, y] = c
-    rect(1, 1, 32, 24, W); rect(2, 2, 31, 23, K)                       # body outline
-    for x, y in [(1, 1), (32, 1), (1, 24), (32, 24)]: px[x, y] = K       # rounded corners
-    rect(10, 4, 23, 17, W); rect(11, 5, 22, 16, K)                     # screen frame
-    rnd = random.Random(4)                                             # the code on the screen: 5x4 cells, one CGA colour each
-    for cy in range(5):
-        for cx in range(5):
-            c = rnd.choice([C, M, W, C, M, K]); rect(12 + cx * 2, 6 + cy * 2, 13 + cx * 2, 7 + cy * 2, c)
-    px[11, 4] = px[22, 4] = px[11, 17] = px[22, 17] = K
-    rect(5, 8, 6, 14, C); rect(3, 10, 8, 11, C)   # d-pad (a plus)
-    rect(26, 8, 27, 9, M); rect(29, 11, 30, 12, M)                     # buttons
-    rect(13, 20, 14, 20, W); rect(17, 20, 18, 20, W); rect(21, 20, 22, 20, W)   # start/select style marks
+    def rounded(x0, y0, x1, y1, r, outline, fill=None):                 # a rounded rectangle drawn as a 1 px outline (corner radius r)
+        def inside(x, y):
+            dx = max(x0 + r - x, x - (x1 - r), 0); dy = max(y0 + r - y, y - (y1 - r), 0)
+            return x0 <= x <= x1 and y0 <= y <= y1 and dx * dx + dy * dy <= r * r + r
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                if inside(x, y):
+                    edge = not all(inside(x + i, y + j) for i, j in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                    if edge: px[x, y] = outline
+                    elif fill is not None: px[x, y] = fill
+    rect(5, 1, 11, 2, W); rect(38, 1, 44, 2, W)                          # L / R shoulder bumps
+    rounded(1, 3, 48, 30, 5, W, K)                                      # body
+    rounded(15, 6, 34, 23, 2, W, K)                                     # screen glass (20 x 18)
+    rnd = random.Random(4)                                              # the code on the screen: 8 x 7 cells of 2 px, one CGA colour each
+    for cy in range(7):
+        for cx in range(8):
+            rect(17 + cx * 2, 8 + cy * 2, 18 + cx * 2, 9 + cy * 2, rnd.choice([C, M, W, C, M, K]))
+    rect(7, 15, 9, 23, C); rect(4, 18, 12, 20, C)                       # d-pad (a plus)
+    for cx, cy in ((40, 16), (36, 20)):                                 # A and B, a diagonal pair of round buttons (4 x 4, corners cut)
+        rect(cx, cy, cx + 3, cy + 3, M)
+        for x, y in ((cx, cy), (cx + 3, cy), (cx, cy + 3), (cx + 3, cy + 3)): px[x, y] = K
+    rect(19, 26, 23, 27, W); rect(26, 26, 30, 27, W)                    # select / start
     return im
 
 def text(lines, colours, gap=1):
