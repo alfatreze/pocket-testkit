@@ -15,6 +15,8 @@ One payload, one CRC32, **three carriers**. Pick by how the picture leaves the d
 
 A bad decode fails loudly (CRC32), never silently.
 
+**Any screen size.** The colour grid (L, R) keeps the same pixel size everywhere and carries more on a bigger surface and less on a smaller one (Game Boy 160x144: 956 B robust; Pocket 400x360: 6,059 B; 1080p: 54,659 B; table in [docs/RESOLUTIONS.md](docs/RESOLUTIONS.md)). **QR is resolution independent:** its capacity is the QR version, the screen only sets how big the modules are drawn.
+
 > Status: **early extraction.** Both carriers are Tau's own code, which ran on a Pocket: the grid codec (`python/tpg.py`, `c/tpg.h`, decoded from Pocket screenshots through DEV 219) and the QR encoder (`c/qr/`, the one the Tau report pages used before the grid; restored from git history). Here the QR encoder is checked against the `segno` reference for all 38 versions, not on a Pocket. The "photo" pictures below are a **simulation**, not a real camera.
 
 ## The examples
@@ -66,15 +68,17 @@ The study ([docs/DENSITY.md](docs/DENSITY.md), [table](docs/qr_density.md)) sets
 
 ```bash
 pip install numpy pillow opencv-python
-python3 python/tpg.py encode report.bin shot.png --mode R     # make a picture
+python3 python/tpg.py encode report.bin shot.png --mode R --size 1280x720   # make a picture for any screen
 python3 python/tpg.py decode shot.png report.bin              # read it back (exit 1 = invalid)
 python3 python/decode.py shot.png                              # decode any tier
 python3 tests/test_decode_and_density.py                       # decoder + density guard
+python3 tests/test_tpg_resolutions.py                           # grid at 13 screen sizes, golden 400x360 compatibility
+python3 tests/test_tpg_c.py                                    # c/tpg.h equals python/tpg.py pixel for pixel, many sizes
 python3 tests/test_qr.py                                      # QR encoder vs segno, all versions (needs: pip install segno)
 python3 examples/make_examples.py                             # regenerate the pictures above
 ```
 
-`c/qr/qrcode.h` is portable C (no libc, no malloc, caller-supplied working buffer, level L, byte mode, versions 1-38); `python/qr_tier.py` builds it natively and draws it. On a device, `c/tpg.h` is the pure C core (where the block sits and which value pixel (x, y) has); the C and Python codecs match pixel for pixel in Tau's tests.
+`c/qr/qrcode.h` is portable C (no libc, no malloc, caller-supplied working buffer, level L, byte mode, versions 1-38); `python/qr_tier.py` builds it natively and draws it. On a device, `c/tpg.h` is the pure C core (where the block sits and which value pixel (x, y) has; `tpg_init_ex(..., w, h, cell)` for any screen); the C and Python codecs match pixel for pixel in Tau's tests.
 
 ## Format (TPG2)
 

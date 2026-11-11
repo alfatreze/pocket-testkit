@@ -38,5 +38,14 @@ def main():
     py = [sys.executable, os.path.join(ROOT, "python", "qr_tier.py"), big, os.path.join(d, "m.png"), "--density", "max"]
     check("CLI max refused without --yes-max", subprocess.run(py, capture_output=True, stdin=subprocess.DEVNULL).returncode == 2)
     check("CLI max accepted with --yes-max", subprocess.run(py + ["--yes-max"], capture_output=True, stdin=subprocess.DEVNULL).returncode == 0)
+    # QR is resolution independent: the same text decodes on any screen size; a screen too small for the version is refused clearly
+    import qr_decode, numpy as np
+    for (w, h) in ((400, 360), (800, 480), (1920, 1080), (240, 160), (160, 144)):
+        try:
+            img = qr_tier.screen("PKT1 PASS run=17", W=w, H=h)
+            check("QR on %dx%d" % (w, h), qr_decode.decode(np.asarray(img)) == "PKT1 PASS run=17")
+        except Exception as e: check("QR on %dx%d" % (w, h), False, e)
+    try: qr_tier.screen("x" * 900, W=160, H=144, density="careful"); check("QR too big for a tiny screen refused", False)
+    except qr_tier.DensityError: check("QR too big for a tiny screen refused", True)
     print("PASSED" if not fails else "FAILED %s" % fails); return 1 if fails else 0
 if __name__ == "__main__": raise SystemExit(main())

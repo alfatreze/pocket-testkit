@@ -31,6 +31,7 @@ LEVELS = {"photo": 10,      # <= 271 B: a phone scanner reads it (OpenCV's class
           "careful": 22,    # <= 1,003 B: simulated photos decode with the Aruco decoder; a steady, close, sharp photo is needed
           "max": 38}        # <= 2,699 B: 2 px modules; screenshots only (lossless PNG or JPEG q80). Photos failed in the study.
 DEFAULT_DENSITY = "photo"
+QUIET = 4                                          # white border, in modules, on every side
 
 class DensityError(ValueError):
     """The payload needs a denser QR than the chosen level allows, or the max level was asked for without confirmation."""
@@ -47,11 +48,16 @@ def check_density(version, density=DEFAULT_DENSITY, allow_max=False):
     elif density == "careful": warnings.warn("QR density 'careful': photograph it close, sharp and straight; test the decode before relying on it.", stacklevel=3)
 
 def screen(text, W=400, H=360, density=DEFAULT_DENSITY, allow_max=False):
+    """Draw the code on a W x H screen, centred, with the largest whole-pixel modules that fit (at least 2 px). QR is resolution
+    independent: what you can carry is set by the QR version (the density level), never by the screen; the screen only decides how big
+    the modules are drawn. (The pixel grid, tiers L and R, is the one whose capacity scales with the screen.)"""
     ver, _, mat = encode_matrix(text.encode())
     check_density(ver, density, allow_max)
-    quiet = 4; n = mat.shape[0] + 2 * quiet
-    px = max(2, min(W, H - 40) // n)
-    img = np.pad(255 * (1 - mat), quiet, constant_values=255).astype(np.uint8).repeat(px, 0).repeat(px, 1)
+    n = mat.shape[0] + 2 * QUIET
+    px = min(W, H) // n
+    if px < 2:
+        raise DensityError("QR version %d is %d modules wide with its border; a %dx%d screen cannot draw it with 2 px modules. Shorten the text, or use the pixel grid (tier R/L)." % (ver, n, W, H))
+    img = np.pad(255 * (1 - mat), QUIET, constant_values=255).astype(np.uint8).repeat(px, 0).repeat(px, 1)
     s = Image.new("RGB", (W, H), (0, 0, 0)); q = Image.fromarray(img).convert("RGB")
     s.paste(q, ((W - q.width) // 2, (H - q.height) // 2)); return s
 

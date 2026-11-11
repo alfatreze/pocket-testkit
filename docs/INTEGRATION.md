@@ -28,6 +28,10 @@ import decode
 tier, payload = decode.decode("shot.png")     # tier 'L' | 'R' | 'Q', payload: bytes; raises ValueError if unreadable
 ```
 
+## Screen size
+
+Nothing assumes 400x360 (that is only the default, the Analogue Pocket). **Grid (L, R):** pass your screen size to the encoder, `tpg.encode(rec, mode, size=(w, h), cell=4)` in Python, `tpg_init_ex(&t, rec, len, mode, w, h, cell)` in C. The pixel size stays fixed (4 px cells, 1 px lossless), so the capacity grows with the surface ([RESOLUTIONS.md](RESOLUTIONS.md)). The decoder finds the size, block and cell on its own from the picture; for a resized copy of a robust grid, tell it the original size (`decode.py --native 1280x720`). **QR** is resolution independent: nothing to configure, the screen only sets the module size.
+
 ## Choosing the tier and the QR density
 
 | The picture leaves the device as... | Tier | Size |
@@ -63,7 +67,7 @@ Works with Claude Code, Codex or any agent that reads a rules file.
 
 1. Copy `c/tpg.h` (grid core: where the block is and which value pixel (x, y) has) and, if you want tier Q, `c/qr/qrcode.h`, `c/qr/qr_tables.h`, `c/qr/qr_policy.h`. Portable C; no libc beyond what you already link, no malloc; the QR needs a caller-supplied buffer of `QR_BUF_LEN` bytes (put it in slow RAM).
 2. Build your record into a byte buffer.
-3. Draw it. For the grid, loop over the screen and ask `tpg.h` for each pixel's value (see its header and `python/tpg.py`, which matches it pixel for pixel). For QR:
+3. Draw it. For the grid, call `tpg_init_ex()` with your screen size, then loop over the block and ask `tpg_pixel()` for each pixel's value (see its header and `python/tpg.py`, which matches it pixel for pixel). Pixels outside `[x0, x0+px) x [y0, y0+px)` are yours. For QR:
 
    ```c
    #include "qr/qrcode.h"
@@ -91,6 +95,8 @@ Then parse `record.bin` with your own code. In CI, run `decode.py` on the artifa
 
 ```bash
 python3 tests/test_decode_and_density.py    # decoder names each tier, bad pictures fail, density guard works
+python3 tests/test_tpg_resolutions.py       # the grid at many screen sizes, plus the original-format check
+python3 tests/test_tpg_c.py                 # your C copy of tpg.h equals the Python codec, pixel for pixel
 python3 tests/test_qr.py                    # the QR encoder against the segno reference, versions 1-38 (needs segno)
 python3 tests/qr_density_study.py           # re-measure density on your own picture/screen size (several minutes)
 ```
