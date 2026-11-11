@@ -17,7 +17,7 @@ SUMMARY = "PKT1 PASS run=17 b=0.7.1 crc=%08X" % zlib.crc32(REPORT)
 def screen_png(arr565=None, rgb=None):
     return Image.fromarray(tpg.to_rgb(arr565)) if rgb is None else Image.fromarray(rgb)
 
-def qr_screen(text): return qr_tier.screen(text)          # the Pocket firmware's own encoder (c/qr/qrcode.h)
+def qr_screen(text, **kw): return qr_tier.screen(text, **kw)          # the Pocket firmware's own encoder (c/qr/qrcode.h)
 
 def caption(img, top, bottom):
     d = ImageDraw.Draw(img); d.text((8, 6), top, fill=(255, 160, 40)); d.text((8, H - 16), bottom, fill=(140, 146, 160)); return img
@@ -52,7 +52,7 @@ def main():
     L = screen_png(tpg.encode(REPORT, tpg.MODE_L)); R = screen_png(tpg.encode(REPORT, tpg.MODE_R)); Q = qr_screen(SUMMARY)
     big = bytes(np.random.default_rng(7).integers(0, 256, 40000, dtype=np.uint8))
     DENSE = "TAUD1:" + base64.urlsafe_b64encode(zlib.compress(REPORT, 9)).decode().rstrip("=")
-    QD = qr_screen(DENSE)
+    import warnings; warnings.simplefilter('ignore'); QD = qr_screen(DENSE, density='max', allow_max=True)
     LB = screen_png(tpg.encode(big, tpg.MODE_L))
     for name, im, top, bot in [("tier_l_lossless", L, "LOSSLESS GRID  %d B" % len(REPORT), "PNG ONLY"),
                                ("tier_r_robust", R, "ROBUST GRID  %d B" % len(REPORT), "SURVIVES JPEG / RESIZE"),

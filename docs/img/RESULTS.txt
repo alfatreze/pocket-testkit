@@ -1,4 +1,4 @@
-dense QR (1046 chars, version 23): decoded by OpenCV
+dense QR (1048 chars, version 23): decoded by OpenCV
 robust after JPEG q80: OK
-simulated photo of QR: decoded -> PKT1 PASS run=17 b=0.7.1 crc=C74F791F
+simulated photo of QR: decoded -> PKT1 PASS run=17 b=0.7.1 crc=18AFFB5E
 simulated photo of robust grid: not decoded (expected: a camera is not supported)

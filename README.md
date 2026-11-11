@@ -52,13 +52,24 @@ QR decodes; the colour grid does not, which is why tier Q exists. Results in [`d
 |---|---|
 | ![](docs/img/sim_photo_qr.jpg) | ![](docs/img/sim_photo_robust_grid.jpg) |
 
+## Decoders and integration
+
+- **`python/decode.py <image>`** reads any picture (grid L or R, or QR) and says which tier it found. `--json`, `--out file.bin`; exit 1 = unreadable.
+- Grids only: `python/tpg.py decode`. QR only: `python/qr_decode.py` (Aruco + classic, for dense codes).
+- **[docs/INTEGRATION.md](docs/INTEGRATION.md)** wires it into a project two ways: **with an AI coding agent** (a rules snippet, [`agent/AGENTS.snippet.md`](agent/AGENTS.snippet.md), a working prompt and a checklist for reviewing the agent's work) or **by hand** (C on the device, Python on the host, CI, verification, traps).
+
+## QR density has guard rails
+
+The study ([docs/DENSITY.md](docs/DENSITY.md), [table](docs/qr_density.md)) sets three levels: `photo` (default, to 271 bytes), `careful` (to 1,003 B, warns) and `max` (to 2,699 B, screenshots only). `max` is refused unless you pass `allow_max=True`, `--yes-max`, or type `MAX`; an agent must not do that unasked. The photo results are simulations.
+
 ## Use it
 
 ```bash
 pip install numpy pillow opencv-python
 python3 python/tpg.py encode report.bin shot.png --mode R     # make a picture
 python3 python/tpg.py decode shot.png report.bin              # read it back (exit 1 = invalid)
-python3 python/qr_decode.py                                   # (library) decode a QR from a screenshot or photo: qr_decode.decode(path)
+python3 python/decode.py shot.png                              # decode any tier
+python3 tests/test_decode_and_density.py                       # decoder + density guard
 python3 tests/test_qr.py                                      # QR encoder vs segno, all versions (needs: pip install segno)
 python3 examples/make_examples.py                             # regenerate the pictures above
 ```
@@ -71,7 +82,7 @@ python3 examples/make_examples.py                             # regenerate the p
 
 ## Not yet done
 
-Spec file with golden vectors; Reed-Solomon for tier R; multi-QR for full reports through a camera; Rust and web decoders; the grid tests in this repo (they live in Tau: `sim/test_tpg.py`, `sim/test_tpg_fw.py`); a recorded phone-photo trial with real photos (the simulation here is not one).
+Spec file with golden vectors; a real-photo density trial (the study is simulated); Reed-Solomon for tier R; multi-QR for full reports through a camera; Rust and web decoders; the grid tests in this repo (they live in Tau: `sim/test_tpg.py`, `sim/test_tpg_fw.py`); a recorded phone-photo trial with real photos (the simulation here is not one).
 
 ## Licence and provenance
 

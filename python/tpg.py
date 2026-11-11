@@ -135,7 +135,12 @@ def _parse(stream: bytes, mode: int, magic: bytes, cap: int):
 def _check(raw: bytes, n: int, crc: int, what: str) -> bytes:
     if len(raw) != n or zlib.crc32(raw) & 0xFFFFFFFF != crc:
         raise ValueError(f"{what}: CRC mismatch (the screenshot was altered or cropped, or too much damage)")
+    global LAST_READ
+    LAST_READ = what                                       # e.g. "TPG2 mode R": lets a caller say which carrier was read
     return raw
+
+
+LAST_READ = ""
 
 
 def _cell_levels(img: np.ndarray, x0: int, y0: int, side: int) -> np.ndarray:

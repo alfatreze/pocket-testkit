@@ -30,7 +30,7 @@ def main():
     try:
         import cv2, numpy as np
         for text in ("PKT1 PASS run=17 b=0.7.1", "x" * 150, "y" * 1000):
-            img = np.asarray(qr_tier.screen(text).convert("RGB"))
+            img = np.asarray(qr_tier.screen(text, density="max", allow_max=True).convert("RGB"))
             import qr_decode
             got = qr_decode.decode(img)
             check("opencv decodes %d chars" % len(text), got == text, repr(got))
