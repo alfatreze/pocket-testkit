@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pixel logo in the four CGA colours (palette 1, high intensity). python3 docs/logo/make_logo.py  -> logo.png, banner.png in this folder.
+"""Pixel logo in the four CGA colours (palette 1, high intensity). python3 assets/logo/make_logo.py  -> logo.png, banner.png in this folder.
 A handheld whose screen shows the colour grid; the banner adds the name in a 4x5 pixel font. Needs Pillow."""
 import os, random
 from PIL import Image

@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 ID_EXPECTED = 0x504B0101
-TCL = Path(__file__).resolve().parent.parent / "host" / "pk_vjtag.tcl"
+TCL = Path(__file__).resolve().parent / "pk_vjtag.tcl"
 
 
 def pack_req(we: bool, addr: int, data: int) -> int:

@@ -1,7 +1,7 @@
 """Starter kit tools: verdict ladder honesty, Pocket JSON checks, package check."""
 import json, subprocess, sys, tempfile
 from pathlib import Path
-T = Path(__file__).resolve().parent.parent / "templates" / "claude-project" / "tools"
+T = Path(__file__).resolve().parent.parent / "claude-project" / "tools"
 sys.path.insert(0, str(T))
 import verdict, check_pocket_json, check_package
 

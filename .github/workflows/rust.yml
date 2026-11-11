@@ -1,9 +1,9 @@
 name: rust
 on:
   push:
-    paths: ["rust/**", ".github/workflows/rust.yml"]
+    paths: ["methods/report-codes/rust/**", ".github/workflows/rust.yml"]
   pull_request:
-    paths: ["rust/**"]
+    paths: ["methods/report-codes/rust/**"]
 jobs:
   test:
     strategy:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: rust
+        working-directory: methods/report-codes/rust
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: rust
+        working-directory: methods/report-codes/rust
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
