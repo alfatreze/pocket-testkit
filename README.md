@@ -6,6 +6,10 @@ Get test and diagnostic results **off a device as a picture**, then decode them 
 
 Extracted from the report codes of the Tau project for the Analogue Pocket. It works on any screen size.
 
+![The three carriers at their minimum (160x144) and maximum (800x480) density](docs/img/preview.png)
+
+*Pixel-exact, same pixel size on both screens, filled to capacity with random data. Regenerate with `python3 examples/make_preview.py`.*
+
 ## Pick a carrier
 
 One payload and one CRC32, three ways to draw it. Choose by how the picture leaves the device.
