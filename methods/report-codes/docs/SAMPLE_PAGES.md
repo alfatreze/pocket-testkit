@@ -2,7 +2,7 @@
 
 *Part of [report codes](../README.md). Paths below are relative to `methods/report-codes/`.*
 
-Nine pages that show every carrier at a typical size and at its limit, for any screen size. The page logic is portable C (`c/sample/pk_sample.h`: no libc, no malloc, no I/O), so the same file renders on a PC today and is what a Pocket core's firmware would call. **Status: host-tested only** (all 54 pictures below decode back to the exact payload, and two injected bugs are caught). It has not been built into a Pocket core or run on a Pocket; that needs a core wrapper, which this kit does not yet include.
+Nine pages that show every carrier at a typical size and at its limit, for any screen size. The page logic is portable C (`c/sample/pk_sample.h`: no libc, no malloc, no I/O), so the same file renders on a PC today and is what a Pocket core's firmware would call. **Status: host-tested only** (all 54 pictures below decode back to the exact payload, and two injected bugs are caught). A [Pocket core](../core/README.md) that displays these pages exists and is simulated, but has not been compiled with Quartus or run on a Pocket.
 
 ## The pages
 
@@ -44,6 +44,6 @@ int r = pk_sample_draw(page, 400, 360, unlocked /* a deliberate key press */, pa
 
 `pk_sample_info(page, w, h, &info)` tells what a page carries on a screen before you draw it. Memory: the payload buffer must hold the page's bytes (up to the grid capacity for the L-max page), so on a RAM-poor core use a smaller page set or keep the payload in external RAM.
 
-## What a Pocket core still needs
+## On a Pocket
 
-A core wrapper: Analogue's APF template files (not redistributable, so not in this repo), a video output for the chosen size (up to 800x720 on the Pocket, 800x480 in practice), a frame buffer, a key to change page, and an unlock key combination for the locked page. Cost to expect: a Quartus fit of the order of the owner's own earlier fits, then a card install by the project's documented procedure. Not done here.
+The [sample-pages core](../core/README.md) loads one rendered page file (`host_gallery -b`) and shows it at 320x240, so a Pocket screenshot of each page can be decoded. Status and what is unverified are listed there. To draw the pages from firmware instead, call `pk_sample_draw` as above.

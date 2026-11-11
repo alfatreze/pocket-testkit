@@ -1,0 +1,10 @@
+{
+  "interact": {
+    "magic": "APF_VER_1",
+    "variables": [
+      { "name": "Swap bytes",  "id": 1, "type": "check", "enabled": true, "address": "0x20000000", "writeonly": true, "defaultval": 0, "value": 1, "value_off": 0 },
+      { "name": "Swap pixels", "id": 2, "type": "check", "enabled": true, "address": "0x20000004", "writeonly": true, "defaultval": 0, "value": 1, "value_off": 0 }
+    ],
+    "messages": []
+  }
+}

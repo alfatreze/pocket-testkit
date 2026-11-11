@@ -25,7 +25,7 @@ def test_unfilled_makefile_stub_fails():
 
 
 def good_core(d):
-    core = {"core": {"magic": "APF_VER_1", "metadata": {"platform_ids": ["x"], "shortname": d.name, "description": "d", "author": "a", "url": "u",
+    core = {"core": {"magic": "APF_VER_1", "metadata": {"platform_ids": ["x"], "shortname": d.name.split(".", 1)[1], "description": "d", "author": d.name.split(".", 1)[0], "url": "u",
                      "version": "1.0.0", "date_release": "2026-11-11"},
                      "framework": {"target_product": "Analogue Pocket", "version_required": "2.1"},
                      "cores": [{"id": 0, "name": "default", "filename": "core.rbf_r"}]}}
@@ -37,10 +37,10 @@ def test_pocket_json():
     with tempfile.TemporaryDirectory() as t:
         d = Path(t) / "Me.Core"; d.mkdir(); good_core(d)
         assert check_pocket_json.check(d) == ([], [])
-        bad = json.loads((d / "core.json").read_text()); bad["core"]["metadata"]["shortname"] = "Other.Core"; bad["core"]["magic"] = "NOPE"
+        bad = json.loads((d / "core.json").read_text()); bad["core"]["metadata"]["shortname"] = "Other"; bad["core"]["magic"] = "NOPE"
         (d / "core.json").write_text(json.dumps(bad))
         e, _ = check_pocket_json.check(d)
-        assert any("must match the folder" in x for x in e) and any("magic" in x for x in e), e
+        assert any("the folder must be named" in x for x in e) and any("magic" in x for x in e), e
         (d / "data.json").write_text("{not json")
         assert any("invalid JSON" in x for x in check_pocket_json.check(d)[0])
         (d / "data.json").write_text(json.dumps({"data": {"magic": "APF_VER_1", "data_slots": [{"name": "a", "id": 1}, {"name": "b", "id": 1}]}}))

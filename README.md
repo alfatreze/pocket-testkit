@@ -18,7 +18,7 @@ pocket-testkit/
 │   ├── formal/           proofs for small control logic
 │   ├── simulation/       RTL, whole-core with a Pocket host model
 │   ├── timing-fit/       map gate, block fits, full fit, seeds
-│   ├── report-codes/     results out of a device as a picture (grid, QR)      [code]
+│   ├── report-codes/     results out of a device as a picture (grid, QR)      [code, sample Pocket core]
 │   ├── debug-links/      JTAG and serial: live registers, memory, signals     [RTL]
 │   ├── pocket-native/    the Pocket's own debug log, event log, pause options
 │   └── ci/               continuous integration
@@ -87,7 +87,7 @@ Each method keeps its tests in its own folder; run them from there.
 
 | Folder | Command | Needs |
 |---|---|---|
-| `methods/report-codes` | `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py`, `test_pocket_meta.py`, `test_sample.py`; `cargo test --features cli` in `rust/` | `pip install numpy pillow opencv-python segno`, a C compiler, Rust |
+| `methods/report-codes` | `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py`, `test_pocket_meta.py`, `test_sample.py`, `core/tests/test_core_sim.py`, `core/tests/test_core_files.py`; `cargo test --features cli` in `rust/` | `pip install numpy pillow opencv-python segno`, a C compiler, Rust, iverilog (core simulation) |
 | `methods/debug-links` | `python3 tests/test_debug_link.py` | iverilog |
 | `starter` | `python3 tests/test_templates.py` | nothing |
 
@@ -96,7 +96,7 @@ Each method keeps its tests in its own folder; run them from there.
 | Part | Evidence |
 |---|---|
 | Report codes | Grids and QR decode from real Pocket screenshots of Tau cores; Python and Rust decoders agree on 31 real captures; owner's real phone photos of QR pages exist but are not recorded here, so the photo limits and example photos are simulated; other screen sizes host-tested only; Rust crate in CI on Linux, macOS, Windows, WebAssembly |
-| Debug-link RTL | iverilog simulations and mutation checks; **never fitted or run on a Pocket** |
+| Debug-link RTL, sample-pages Pocket core | iverilog simulations and mutation checks; **never compiled with Quartus or run on a Pocket** |
 | File checks, starter tools | host tests |
 | Guides | reviewed against Analogue's docs and a knowledge base; items marked unverified need a test on your setup |
 

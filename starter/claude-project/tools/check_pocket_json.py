@@ -27,7 +27,8 @@ def check(folder):
         m = core.get("metadata", {})
         for k, n in LIMITS.items():
             if k in m and len(str(m[k])) > n: err.append("core.json: metadata.%s longer than %d" % (k, n))
-        if m.get("shortname") and m["shortname"] != folder.name: err.append("core.json: shortname %r must match the folder name %r" % (m["shortname"], folder.name))
+        want = "%s.%s" % (m.get("author", ""), m.get("shortname", ""))
+        if m.get("shortname") and folder.name != want: err.append("core.json: the folder must be named <author>.<shortname> = %r, not %r" % (want, folder.name))
         if m.get("date_release") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(m["date_release"])): err.append("core.json: date_release must be YYYY-MM-DD")
         if len(m.get("platform_ids", [])) > 4: err.append("core.json: more than 4 platform_ids")
         f = core.get("framework", {})

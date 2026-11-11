@@ -6,7 +6,7 @@
 Validates the files a Pocket core ships with, before anything is copied to a card. The Pocket gives almost no feedback on a malformed JSON file: the core silently misbehaves or is missing from the menu. A stale bitstream on the card silently loads the old core.
 
 ## Finds
-Invalid JSON, wrong `magic`, fields over the documented length limits, duplicate slot or variable ids, a `shortname` that does not match the folder, too many slots, a missing `.rbf_r`, a card file that differs from the build output.
+Invalid JSON, wrong `magic`, fields over the documented length limits, duplicate slot or variable ids, a folder not named `<author>.<shortname>`, too many slots, a missing `.rbf_r`, a card file that differs from the build output.
 
 ## Use it when
 Always, first: it is the cheapest rung of the ladder and runs before every install.

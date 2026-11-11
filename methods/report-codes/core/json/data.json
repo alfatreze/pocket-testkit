@@ -1,0 +1,16 @@
+{
+  "data": {
+    "magic": "APF_VER_1",
+    "data_slots": [
+      {
+        "name": "Page",
+        "id": 1,
+        "required": true,
+        "parameters": 3,
+        "extensions": ["bin"],
+        "size_exact": 153600,
+        "address": "0x10000000"
+      }
+    ]
+  }
+}

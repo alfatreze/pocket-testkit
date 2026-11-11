@@ -114,7 +114,7 @@ A 16-byte header (`TPG2`, mode, flags, reserved, payload length, CRC32; big endi
 | Other screen sizes | host tests only (13 sizes, Python and C equal pixel for pixel) |
 | Phone photos | used in practice: the owner photographed Tau Alpha's QR pages with a phone. Those photos and their results are **not recorded in this repo**, so the density limits and the example photos here are simulated |
 
-The sample pages are host-tested only, never run on a Pocket. Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a Pocket core wrapper for the sample pages, fuzzing the decoders.
+The sample pages are host-tested only, never run on a Pocket. Not done: recording the real phone photos as test pictures (to replace the simulated density limits), error correction for tier R, multi-QR for full reports through a camera, a web decoder, a Quartus build and Pocket run of the sample-pages core, fuzzing the decoders.
 
 
 ## Documentation
@@ -134,7 +134,8 @@ The sample pages are host-tested only, never run on a Pocket. Not done: recordin
 | `rust/` | OS-independent decoder crate ([README](rust/README.md)) |
 | `examples/` | picture and gallery generators |
 | `tests/` | all tests and the density study |
+| `core/` | [Sample-pages Pocket core](core/README.md): RTL, JSON, assembler, simulation tests (not yet built with Quartus) |
 | `tools/` | QR table generator |
 
-Tests (from this folder): `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, `test_sample.py`, and `cargo test --features cli` in `rust/`. Needs `pip install numpy pillow opencv-python`.
+Tests (from this folder): `python3 tests/test_tpg_resolutions.py`, `test_tpg_c.py`, `test_decode_and_density.py`, `test_qr.py` (needs `pip install segno`), `test_pocket_meta.py`, `test_sample.py`, `core/tests/test_core_sim.py`, `core/tests/test_core_files.py`, and `cargo test --features cli` in `rust/`. Needs `pip install numpy pillow opencv-python`.
 
