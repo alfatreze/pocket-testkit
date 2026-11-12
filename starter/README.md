@@ -12,6 +12,7 @@ Copy the files in [`claude-project/`](claude-project/) into a project (Pocket co
 | `claude-project/docs/CURRENT_STATUS.md`, `ROADMAP.md`, `AUDIT_TRAIL.md`, `DECISIONS.md`, `handoffs/TEMPLATE.md` | One status page, the order of work, the evidence log, recorded decisions, a handoff form |
 | `claude-project/ladder.json` + `tools/verdict.py` | The test ladder as data; one machine-readable verdict that cannot claim more than was run |
 | `claude-project/tools/check_pocket_json.py` | Validates a Pocket core folder's JSON against the documented limits |
+| `claude-project/tools/outcomes.py` | Record test outcomes (method, cost, findings) and pool them across projects: [effectiveness](../methods/effectiveness/README.md) |
 | `claude-project/tools/check_package.py` | Compares the file on the card with the build output (stale bitstream check) |
 | `claude-project/Makefile` | Ladder targets; the stubs fail until you fill them, so an empty rung never passes |
 | `claude-project/.claude/settings.example.json` | Example permission allow and deny lists |

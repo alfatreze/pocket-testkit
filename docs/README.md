@@ -11,3 +11,5 @@
 | | [debug links](../methods/debug-links/README.md) | Options, [choosing](../methods/debug-links/CHOOSING.md), [serial](../methods/debug-links/SERIAL.md), [RTL](../methods/debug-links/rtl/README.md) |
 | **Starting a project** | [project starter](../starter/README.md) | CLAUDE.md, rules, status files, test ladder, checks |
 | **Records** | [testing audit, 2026-11](reviews/testing-audit-2026-11.md) | The review of the proposed testing approaches against Analogue's docs |
+
+Recording what each method found, across projects: [methods/effectiveness](../methods/effectiveness/README.md) (outcome records, ingest, report).

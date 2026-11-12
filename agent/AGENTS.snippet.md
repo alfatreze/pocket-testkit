@@ -22,3 +22,6 @@ This project carries test and diagnostic results off the device as a picture. Do
 - For a new or existing project, adapt `starter/claude-project/` (CLAUDE.md, rules, status files, `ladder.json`, `tools/verdict.py`). Run `python3 tools/verdict.py` in the adopting project and read its one-line verdict; it reports manual rungs (fit, package check, device) as NOT RUN and never claims more evidence than was run.
 - Validate a Pocket core folder with `tools/check_pocket_json.py` and compare the card's bitstream with the build output using `tools/check_package.py` before any hardware claim. Method overview: `methods/README.md`; choosing: `docs/choosing.md`.
 
+## Outcome records (pocket-testkit)
+
+- After each test method you run, add a record: `python3 tools/outcomes.py add docs/outcomes/outcomes.jsonl ...` (see `methods/effectiveness/README.md`): method, technique, cost in minutes, outcome, and each finding classified as a real bug (design-bug, spec-gap), a test gap, or the test setup's fault (tool-artefact, model-fault), with how late it would otherwise have surfaced. Do not claim a real bug for a finding that was the simulator's or the testbench's fault. Use an anonymous project key; no project, product or person names in the free text of a file meant to be shared.

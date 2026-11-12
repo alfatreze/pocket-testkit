@@ -14,5 +14,6 @@ One folder per method. Each README has the same sections: what it does, what it 
 | | [debug-links](debug-links/README.md) | What are the live registers, memory, signals? | cable and a build | RTL simulated only |
 | | [pocket-native](pocket-native/README.md) | Why does it fail to boot or load? | none | guide |
 | **Process** | [ci](ci/README.md) | Did something break that nobody re-ran? | low | one workflow |
+| | [effectiveness](effectiveness/README.md) | Which methods found real bugs, at what cost, across projects? | minutes per result | **tool + tests** (outcome records, ingest, report) |
 
 "Guide" means the method is described with its trade-offs and references but no code is included. "Code" means tools and tests are in the folder. Nothing in this kit has been run on a Pocket except the report codes (real screenshots and photos of Tau Alpha's pages).

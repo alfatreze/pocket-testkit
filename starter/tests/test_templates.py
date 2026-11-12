@@ -18,6 +18,21 @@ def test_verdict_cannot_overclaim():
     assert s["evidence_reached"] == "pocket"          # an automatic rung labelled pocket (for example a scripted device run) may reach it
 
 
+def test_verdict_records_outcomes():
+    with tempfile.TemporaryDirectory() as t:
+        out = Path(t) / "o.jsonl"
+        ladder = [{"name": "a", "label": "host", "cmd": "true", "method": "host-tests", "target": "parser"}, {"name": "b", "label": "simulation", "cmd": "false", "method": "simulation", "target": "whole-core"},
+                  {"name": "c", "label": "pocket", "cmd": "x", "manual": True}]
+        cfg = Path(t) / "ladder.json"; cfg.write_text(json.dumps(ladder))
+        r = subprocess.run([sys.executable, str(T / "verdict.py"), "--config", str(cfg), "--record", str(out), "--project", "p-test"], capture_output=True, text=True)
+        assert r.returncode == 1 and "recorded 2 outcome(s)" in r.stdout, r.stdout
+        recs = [json.loads(l) for l in out.read_text().splitlines()]
+        assert [(x["id"], x["method"], x["outcome"], x["project"]) for x in recs] == [("o-001", "host-tests", "clean", "p-test"), ("o-002", "simulation", "failed", "p-test")], recs   # the manual rung is not recorded
+        subprocess.run([sys.executable, str(T / "verdict.py"), "--config", str(cfg), "--record", str(out), "--project", "p-test"], capture_output=True, text=True)
+        assert [json.loads(l)["id"] for l in out.read_text().splitlines()] == ["o-001", "o-002", "o-003", "o-004"]     # ids continue
+        v = subprocess.run([sys.executable, str(T / "outcomes.py"), "validate", str(out)], capture_output=True, text=True); assert v.returncode == 0, v.stdout
+
+
 def test_unfilled_makefile_stub_fails():
     mk = T.parent / "Makefile"
     r = subprocess.run(["make", "-s", "-f", str(mk), "test-host"], capture_output=True, text=True)

@@ -1,0 +1,230 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://github.com/alfatreze/pocket-testkit/methods/effectiveness/schema/outcome.schema.json",
+ "title": "One test outcome record (schema 1), one JSON object per line",
+ "type": "object",
+ "required": [
+  "schema",
+  "id",
+  "date",
+  "project",
+  "method",
+  "technique",
+  "target",
+  "label",
+  "cost",
+  "outcome",
+  "findings"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "id": {
+   "type": "string",
+   "minLength": 1
+  },
+  "date": {
+   "type": "string",
+   "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$"
+  },
+  "project": {
+   "type": "string",
+   "minLength": 1,
+   "description": "an anonymous key you choose, never a name"
+  },
+  "method": {
+   "enum": [
+    "file-checks",
+    "host-tests",
+    "fuzzing",
+    "formal",
+    "simulation",
+    "timing-fit",
+    "report-codes",
+    "debug-links",
+    "pocket-native",
+    "ci",
+    "device-run",
+    "other"
+   ]
+  },
+  "technique": {
+   "type": "string",
+   "minLength": 1
+  },
+  "tool": {
+   "type": "string"
+  },
+  "target": {
+   "type": "object",
+   "required": [
+    "kind"
+   ],
+   "properties": {
+    "kind": {
+     "enum": [
+      "parser",
+      "rtl-block",
+      "fsm",
+      "arbiter",
+      "fifo",
+      "cdc",
+      "datapath",
+      "cpu-firmware",
+      "whole-core",
+      "build-flow",
+      "installer",
+      "ui",
+      "timing",
+      "other"
+     ]
+    }
+   }
+  },
+  "label": {
+   "enum": [
+    "code-review",
+    "host",
+    "formal-bounded",
+    "formal-unbounded",
+    "simulation",
+    "netlist",
+    "quartus",
+    "pocket"
+   ],
+   "description": "the evidence this result gives"
+  },
+  "cost": {
+   "type": "object",
+   "properties": {
+    "setup_min": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "run_min": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "human_min": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    }
+   },
+   "description": "estimates, minutes"
+  },
+  "outcome": {
+   "enum": [
+    "bug-found",
+    "clean",
+    "artefact-only",
+    "inconclusive",
+    "failed",
+    "not-run"
+   ]
+  },
+  "findings": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "kind",
+     "severity",
+     "would_otherwise_surface",
+     "summary"
+    ],
+    "properties": {
+     "kind": {
+      "enum": [
+       "design-bug",
+       "test-gap",
+       "tool-artefact",
+       "model-fault",
+       "spec-gap"
+      ]
+     },
+     "severity": {
+      "enum": [
+       "low",
+       "medium",
+       "high"
+      ]
+     },
+     "would_otherwise_surface": {
+      "enum": [
+       "never",
+       "simulation",
+       "fit",
+       "pocket",
+       "field"
+      ]
+     },
+     "summary": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "mutation": {
+   "type": "object",
+   "required": [
+    "killed",
+    "total"
+   ],
+   "properties": {
+    "killed": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "total": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "confirmed_by": {
+   "type": "object",
+   "required": [
+    "label",
+    "note"
+   ],
+   "properties": {
+    "label": {
+     "enum": [
+      "code-review",
+      "host",
+      "formal-bounded",
+      "formal-unbounded",
+      "simulation",
+      "netlist",
+      "quartus",
+      "pocket"
+     ]
+    },
+    "note": {
+     "type": "string"
+    },
+    "date": {
+     "type": "string"
+    }
+   }
+  },
+  "ref": {
+   "type": "string"
+  },
+  "notes": {
+   "type": "string"
+  }
+ },
+ "$comment": "Cross-field rules (bug-found needs a design-bug or spec-gap finding; clean cannot carry one; artefact-only needs findings; killed <= total) are enforced by tools/outcomes.py validate, which is the reference."
+}

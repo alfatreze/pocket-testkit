@@ -23,7 +23,10 @@ Every result says how far it was proven, and never claims more.
 |---|---|
 | `code-review` | read only; nothing run |
 | `host` | ran on a PC |
+| `formal-bounded` | a formal check to a depth (BMC): no counterexample within the bound |
+| `formal-unbounded` | a formal proof for all inputs (k-induction or PDR), under the stated assumptions |
 | `simulation` | ran in RTL or CPU simulation |
+| `netlist` | simulated the synthesised netlist |
 | `quartus` | a map or fit report |
 | `pocket` | ran on a real device |
 
@@ -46,3 +49,6 @@ Before launching a fit, state how long it takes and the finish time; run it in t
 
 ## 8. Keep what you learn
 Record decisions (and rejected options), results and handoffs in files the next session reads ([starter](../starter/README.md)). A result that is not written down is lost with the session.
+
+## 9. Record what each method found
+Write one outcome record per result (method, technique, cost, outcome, findings with severity and how late they would otherwise have surfaced) and pool the files of many projects: [effectiveness](../methods/effectiveness/README.md). Separate real bugs from alarms that were the test setup's fault; both are results, and the second kind is the cost of a method.
